@@ -1,20 +1,23 @@
 #ifndef UDPP_BUF_H
 #define UDPP_BUF_H
 
-#include "platform.h"
+/*
+ * Copyright 2019 Chris Burns <chris@kitty.city>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 
-#include <stdint.h>
+#include "socklynx/common.h"
 
-#if UDPP_PLATFORM_WINDOWS
-	typedef struct udpp_buf_s {
-		char *base;
-		uint32_t len;
-	} udpp_buf_t;
-#else
-	typedef struct udpp_buf_s {
-		char *base;
-		size_t len;
-	} udpp_buf_t;
-#endif
+typedef uint64_t sl_sock_t;
 
 #endif
