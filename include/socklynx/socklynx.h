@@ -6,6 +6,6 @@
 #include "socklynx/endpoint.h"
 #include "socklynx/buf.h"
 
-typedef uint64_t socklynx_sock_t;
+typedef uint64_t sl_sock_t;
 
 #endif

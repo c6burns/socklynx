@@ -11,14 +11,14 @@
 #	include <netinet/ip.h>
 #endif
 
-union socklynx_endpoint_u {
+union sl_endpoint_u {
 	struct sockaddr_in addr4;
 	struct sockaddr_in6 addr6;
 };
 
-typedef union socklynx_endpoint_u socklynx_endpoint_t;
+typedef union sl_endpoint_u sl_endpoint_t;
 
-SL_INLINE int socklynx_endpoint_size(socklynx_endpoint_t *endpoint)
+SL_INLINE int sl_endpoint_size(sl_endpoint_t *endpoint)
 {
 	SL_ASSERT(endpoint);
 	switch (endpoint->addr4.sin_family) {
@@ -30,29 +30,29 @@ SL_INLINE int socklynx_endpoint_size(socklynx_endpoint_t *endpoint)
 	return SL_ERR;
 }
 
-SL_INLINE bool socklynx_endpoint_is4(socklynx_endpoint_t *endpoint)
+SL_INLINE bool sl_endpoint_is4(sl_endpoint_t *endpoint)
 {
 	SL_ASSERT(endpoint);
 	return (endpoint->addr4.sin_family == AF_INET);
 }
 
-SL_INLINE struct sockaddr_in *socklynx_endpoint_get4(socklynx_endpoint_t *endpoint)
+SL_INLINE struct sockaddr_in *sl_endpoint_get4(sl_endpoint_t *endpoint)
 {
 	SL_ASSERT(endpoint);
-	SL_ASSERT(socklynx_endpoint_is4(endpoint));
+	SL_ASSERT(sl_endpoint_is4(endpoint));
 	return &endpoint->addr4;
 }
 
-SL_INLINE bool socklynx_endpoint_is6(socklynx_endpoint_t *endpoint)
+SL_INLINE bool sl_endpoint_is6(sl_endpoint_t *endpoint)
 {
 	SL_ASSERT(endpoint);
 	return (endpoint->addr4.sin_family == AF_INET6);
 }
 
-SL_INLINE struct sockaddr_in6 *socklynx_endpoint_get6(socklynx_endpoint_t *endpoint)
+SL_INLINE struct sockaddr_in6 *sl_endpoint_get6(sl_endpoint_t *endpoint)
 {
 	SL_ASSERT(endpoint);
-	SL_ASSERT(socklynx_endpoint_is6(endpoint));
+	SL_ASSERT(sl_endpoint_is6(endpoint));
 	return &endpoint->addr6;
 }
 
