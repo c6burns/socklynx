@@ -27,7 +27,12 @@
 #include "socklynx/error.h"
 #include "socklynx/endpoint.h"
 #include "socklynx/buf.h"
+#include "socklynx/sock.h"
+#include "socklynx/sys.h"
 
-typedef uint64_t sl_sock_t;
+
+SL_API int32_t SL_CALL socklynx_setup(void);
+SL_API int32_t SL_CALL socklynx_cleanup(void);
+
 
 #endif

@@ -23,3 +23,16 @@
 #define SL_EXPORTS
 
 #include "socklynx/socklynx.h"
+
+
+sl_sys_t g_sys = { 0 };
+
+SL_API int32_t SL_CALL socklynx_setup(void)
+{
+	return sl_sys_setup(&g_sys);
+}
+
+SL_API int32_t SL_CALL socklynx_cleanup(void)
+{
+	return sl_sys_cleanup(&g_sys);
+}
