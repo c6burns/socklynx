@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef UDPP_BUF_H
-#define UDPP_BUF_H
+#ifndef SL_SOCK_H
+#define SL_SOCK_H
 
 #include "socklynx/common.h"
 
