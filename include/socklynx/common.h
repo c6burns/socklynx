@@ -33,8 +33,8 @@
  */
 //#define SL_NO_ASSERT
 //#define SL_NO_STATIC_ASSERT
-//#define SL_NO_STDBOOL
-//#define SL_NO_STDINT
+//#define SL_C_MISSING_STDBOOL
+//#define SL_C_MISSING_STDINT
 //#define SL_FORCE_64
 //#define SL_FORCE_32
 //#define SL_FORCE_PLATFORM_NONE
@@ -114,13 +114,13 @@
 #endif
 
 
-#ifndef SL_NO_STDBOOL
+#ifndef SL_C_MISSING_STDBOOL
 #    include <stdbool.h>
 #elif SL_C_GCC && !defined(__STRICT_ANSI__)
 #	define _Bool bool
 #endif
 
-#ifndef SL_NO_STDINT
+#ifndef SL_C_MISSING_STDINT
 #	include <stdint.h>
 #	ifdef SL_PLATFORM_ANDROID
 #		include <limits.h>
