@@ -24,7 +24,92 @@
 #define SL_SOCK_H
 
 #include "socklynx/common.h"
+#include "socklynx/sys.h"
+#include "socklynx/endpoint.h"
 
-typedef uint64_t sl_sock_t;
+#if SL_PLATFORM_WINDOWS || SL_PLATFORM_XBONE
+#	include <winsock2.h>
+#	include <ws2ipdef.h>
+#elif
+#	include <unistd.h>
+#	include <fcntl.h>
+#	include <sys/socket.h>
+#endif
+
+/* sock state */
+#define SL_SOCK_STATE_NEW 0
+#define SL_SOCK_STATE_CREATED 1
+#define SL_SOCK_STATE_BOUND 2
+#define SL_SOCK_STATE_OPEN 3
+#define SL_SOCK_STATE_CLOSED 4
+#define SL_SOCK_STATE_ERROR 5
+
+/* sock direction */
+#define SL_SOCK_DIR_NONE 0
+#define SL_SOCK_DIR_INCOMING 1
+#define SL_SOCK_DIR_OUTGOING 2
+
+/* sock address family */
+#define SL_SOCK_AF_IPV4 AF_INET
+#define SL_SOCK_AF_IPV6 AF_INET6
+
+/* sock type */
+#define SL_SOCK_TYPE_DGRAM SOCK_DGRAM
+#define SL_SOCK_TYPE_STREAM SOCK_STREAM
+
+/* sock proto */
+#define SL_SOCK_PROTO_UDP IPPROTO_UDP
+#define SL_SOCK_PROTO_TCP IPPROTO_TCP
+
+typedef struct sl_sock_s {
+	int64_t fd;
+	uint32_t dir;
+	uint32_t state;
+	uint32_t type;
+	uint32_t proto;
+	uint32_t err;
+	sl_endpoint_t endpoint;
+} sl_sock_t;
+
+
+SL_INLINE int sl_sock_create(sl_sock_t *sock, uint32_t af, uint32_t type, uint32_t proto)
+{
+	SL_GUARD_NULL(sock);
+	SL_GUARD(sock->state != SL_SOCK_STATE_NEW);
+	memset(sock, 0, sizeof(*sock));
+
+	SL_GUARD(sl_endpoint_af_set(&sock->endpoint, af));
+
+	switch (type) {
+	case SL_SOCK_TYPE_DGRAM:
+	case SL_SOCK_TYPE_STREAM:
+		sock->type = type;
+		break;
+	default:
+		return SL_ERR;
+	}
+
+	switch (proto) {
+	case SL_SOCK_PROTO_UDP:
+	case SL_SOCK_PROTO_TCP:
+		sock->proto = proto;
+		break;
+	default:
+		return SL_ERR;
+	}
+
+	int64_t sockfd = socket(sl_endpoint_af(&sock->endpoint), sock->type, sock->proto);
+#if SL_SOCK_API_WINSOCK
+	if (sockfd == INVALID_SOCKET) {
+#elif
+	if (sockfd < 0) {
+#endif
+		sock->err = sl_sys_errno();
+		return SL_ERR;
+	}
+
+	sock->fd = sockfd;
+	return SL_OK;
+}
 
 #endif
