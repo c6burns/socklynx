@@ -25,57 +25,53 @@
 
 #include "socklynx/common.h"
 
-#if SL_PLATFORM_WINDOWS
-#   include <winsock2.h>
+#if SL_PLATFORM_WINDOWS || SL_PLATFORM_XBONE
+#	include <winsock2.h>
 #	include <ws2ipdef.h>
-#else
+#elif
+#	include <unistd.h>
+#	include <fcntl.h>
 #	include <sys/socket.h>
-#	include <netinet/ip.h>
 #endif
 
-union sl_endpoint_u {
-	struct sockaddr_in addr4;
-	struct sockaddr_in6 addr6;
-};
+typedef struct sockaddr_in sockaddr4;
+typedef struct sockaddr_in6 sockaddr6;
 
-typedef union sl_endpoint_u sl_endpoint_t;
+typedef union sl_endpoint_u {
+	sockaddr4 addr4;
+	sockaddr6 addr6;
+} sl_endpoint_t;
+
+SL_INLINE uint16_t sl_endpoint_af(sl_endpoint_t *endpoint)
+{
+	SL_ASSERT(endpoint);
+	return endpoint->addr4.sin_family;
+}
+
+SL_INLINE uint16_t sl_endpoint_af_set(sl_endpoint_t *endpoint, int32_t af)
+{
+	SL_ASSERT(endpoint);
+	return endpoint->addr4.sin_family;
+}
+
+SL_INLINE bool sl_endpoint_is_ipv4(sl_endpoint_t *endpoint)
+{
+	SL_ASSERT(endpoint);
+	return (sl_endpoint_af(endpoint) == AF_INET);
+}
+
+SL_INLINE bool sl_endpoint_is_ipv6(sl_endpoint_t *endpoint)
+{
+	SL_ASSERT(endpoint);
+	return (sl_endpoint_af(endpoint) == AF_INET6);
+}
 
 SL_INLINE int sl_endpoint_size(sl_endpoint_t *endpoint)
 {
 	SL_ASSERT(endpoint);
-	switch (endpoint->addr4.sin_family) {
-	case AF_INET:
-		return sizeof(struct sockaddr_in);
-	case AF_INET6:
-		return sizeof(struct sockaddr_in6);
-	}
+	if (sl_endpoint_is_ipv4(endpoint)) return sizeof(sockaddr4);
+	if (sl_endpoint_is_ipv4(endpoint)) return sizeof(sockaddr6);
 	return SL_ERR;
-}
-
-SL_INLINE bool sl_endpoint_is4(sl_endpoint_t *endpoint)
-{
-	SL_ASSERT(endpoint);
-	return (endpoint->addr4.sin_family == AF_INET);
-}
-
-SL_INLINE struct sockaddr_in *sl_endpoint_get4(sl_endpoint_t *endpoint)
-{
-	SL_ASSERT(endpoint);
-	SL_ASSERT(sl_endpoint_is4(endpoint));
-	return &endpoint->addr4;
-}
-
-SL_INLINE bool sl_endpoint_is6(sl_endpoint_t *endpoint)
-{
-	SL_ASSERT(endpoint);
-	return (endpoint->addr4.sin_family == AF_INET6);
-}
-
-SL_INLINE struct sockaddr_in6 *sl_endpoint_get6(sl_endpoint_t *endpoint)
-{
-	SL_ASSERT(endpoint);
-	SL_ASSERT(sl_endpoint_is6(endpoint));
-	return &endpoint->addr6;
 }
 
 #endif
