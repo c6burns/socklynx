@@ -30,27 +30,22 @@
  * defines under the SL_PLATFORM_*** define you've forced
  * If you know a way of autodetecting a console platform without breaking
  * any laws or NDAs, please submit a PR.
+ *
+ * #define SL_SKIP_STATIC_ASSERT
+ * #define SL_C_MISSING_ASSERT
+ * #define SL_C_MISSING_STDBOOL
+ * #define SL_C_MISSING_STDINT
+ * #define SL_FORCE_64
+ * #define SL_FORCE_32
+ * #define SL_FORCE_PLATFORM_NONE
+ * #define SL_FORCE_PLATFORM_PS4
+ * #define SL_FORCE_PLATFORM_XBONE
+ * #define SL_FORCE_PLATFORM_SWITCH
+ * #define SL_FORCE_C_NONE
  */
-//#define SL_NO_ASSERT
-//#define SL_NO_STATIC_ASSERT
-//#define SL_C_MISSING_STDBOOL
-//#define SL_C_MISSING_STDINT
-//#define SL_FORCE_64
-//#define SL_FORCE_32
-//#define SL_FORCE_PLATFORM_NONE
-//#define SL_FORCE_PLATFORM_PS4
-//#define SL_FORCE_PLATFORM_XBONE
-//#define SL_FORCE_PLATFORM_SWITCH
-//#define SL_FORCE_C_NONE
 
 
-#if !defined(SL_FORCE_32) && (defined(SL_FORCE_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(__aarch64__) || defined(__ia64__) || defined(__powerpc64__))
-#	define SL_64 1
-#else
-#	define SL_32 1
-#endif
-
-
+/* determine platform */
 #if defined(SL_FORCE_PLATFORM_NONE)
 #	define SL_PLATFORM_NONE 1
 #elif defined(SL_FORCE_PLATFORM_PS4)
@@ -83,6 +78,18 @@
 #endif
 
 
+/* determine socket API */
+#if SL_PLATFORM_WINDOWS || SL_PLATFORM_XBONE
+#	define SL_SOCK_API_WINSOCK 1
+#elif SL_PLATFORM_POSIX || SL_PLATFORM_OSX || SL_PLATFORM_IOS || SL_PLATFORM_ANDROID
+#	define SL_SOCK_API_POSIX 1
+#elif SL_PLATFORM_SWITCH
+#	define SL_SOCK_API_SWITCH 1
+#elif SL_PLATFORM_PS4
+#	define SL_SOCK_API_PS4 1
+#endif
+
+
 #if !defined(SL_FORCE_C_NONE) && defined(_MSC_VER)
 #	define SL_C_MSC 1
 #elif !defined(SL_FORCE_C_NONE) && defined(__GNUC__)
@@ -111,6 +118,13 @@
 #	define SL_INLINE 
 #	define SL_CALL
 #	define SL_API
+#endif
+
+
+#if !defined(SL_FORCE_32) && (defined(SL_FORCE_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(__aarch64__) || defined(__ia64__) || defined(__powerpc64__))
+#	define SL_64 1
+#else
+#	define SL_32 1
 #endif
 
 
@@ -179,7 +193,7 @@ typedef unsigned long int uintptr_t;
 #endif
 
 
-#ifdef SL_NO_STATIC_ASSERT
+#ifdef SL_SKIP_STATIC_ASSERT
 #	define SL_STATIC_ASSERT(cond)
 #else
 #	define SL_CONCAT(A, B) A ## B
