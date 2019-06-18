@@ -69,10 +69,17 @@ typedef struct sl_sock_s {
 	uint32_t state;
 	uint32_t type;
 	uint32_t proto;
-	uint32_t err;
+	uint32_t error;
 	sl_endpoint_t endpoint;
 } sl_sock_t;
 
+
+SL_INLINE_DECL int sl_sock_fd_set(sl_sock_t *sock, int64_t sockfd);
+SL_INLINE_DECL int sl_sock_dir_set(sl_sock_t *sock, uint32_t dir);
+SL_INLINE_DECL int sl_sock_state_set(sl_sock_t *sock, uint32_t state);
+SL_INLINE_DECL int sl_sock_type_set(sl_sock_t *sock, uint32_t type);
+SL_INLINE_DECL int sl_sock_proto_set(sl_sock_t *sock, uint32_t proto);
+SL_INLINE_DECL int sl_sock_error_set(sl_sock_t *sock, uint32_t error);
 
 SL_INLINE_DECL int sl_sock_create(sl_sock_t *sock, uint32_t af, uint32_t type, uint32_t proto);
 
