@@ -12,7 +12,7 @@ For Windows, Linux, OSX, iOS, and Android a CMake build system is provided. Your
 
 ### Prerequisites
 
-You will need CMake for desktop and mobile platforms, and a developer kits for any console platforms. socklynx itself uses only C and OS networking APIs.
+You will need CMake for desktop and mobile platforms, and a developer kit for any console platforms. socklynx itself uses only C and OS networking APIs.
 
 ## Authors
 
