@@ -25,21 +25,20 @@
 
 #include "common.h"
 
-#if SL_PLATFORM_WINDOWS
-
-typedef struct sl_buf_s {
+ /* PLATFORM TODO: extend buffer definition for your platform */
+#if SL_SOCK_API_WINSOCK
+struct sl_buf_s {
 	uint32_t len;
 	char *base;
-} sl_buf_t;
-
+};
 #else
-
-typedef struct sl_buf_s {
+struct sl_buf_s {
 	char *base;
 	size_t len;
-} sl_buf_t;
-
+};
 #endif
+
+typedef struct sl_buf_s sl_buf_t;
 
 #if SL_64
 SL_STATIC_ASSERT(sizeof(sl_buf_t) == 16);
