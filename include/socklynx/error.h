@@ -41,6 +41,4 @@
 #define SL_GUARD_CLEANUP(expr) SL_GUARD_GOTO(cleanup, expr)
 #define SL_GUARD_NULL_CLEANUP(expr) SL_GUARD_GOTO(cleanup, !(expr))
 
-
-
 #endif

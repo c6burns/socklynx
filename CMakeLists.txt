@@ -28,11 +28,16 @@ include_directories(src/socklynx)
 add_library(socklynx
 	src/socklynx/socklynx.c
 	include/socklynx/socklynx.h
+	src/socklynx/endpoint.c
+	include/socklynx/endpoint.h
+	src/socklynx/buf.c
+	include/socklynx/buf.h
+	src/socklynx/sock.c
+	include/socklynx/sock.h
+	src/socklynx/sys.c
+	include/socklynx/sys.h
 	include/socklynx/common.h
 	include/socklynx/error.h
-	include/socklynx/endpoint.h
-	include/socklynx/buf.h
-	include/socklynx/sock.h
 )
 
 include_directories(src/socklynx_server)

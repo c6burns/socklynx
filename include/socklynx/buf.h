@@ -23,7 +23,7 @@
 #ifndef SL_BUF_H
 #define SL_BUF_H
 
-#include "common.h"
+#include "socklynx/common.h"
 
  /* PLATFORM TODO: extend buffer definition for your platform */
 #if SL_SOCK_API_WINSOCK

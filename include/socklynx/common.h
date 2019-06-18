@@ -101,21 +101,18 @@
 #endif
 
 
+#	define SL_INLINE_DECL
+#	define SL_INLINE_IMPL inline
+
+
 #if SL_C_MSC 
 #	define SL_CALL __cdecl
-#	define SL_INLINE static __forceinline inline
-
 #	ifdef SL_EXPORTS
 #		define SL_API __declspec(dllexport)
 #	else
 #		define SL_API __declspec(dllimport)
 #	endif
-#elif SL_C_GCC || SL_C_CLANG
-#	define SL_INLINE static __attribute__((always_inline)) inline
-#	define SL_CALL
-#	define SL_API
 #else
-#	define SL_INLINE 
 #	define SL_CALL
 #	define SL_API
 #endif
@@ -136,6 +133,7 @@
 
 #ifndef SL_C_MISSING_STDINT
 #	include <stdint.h>
+#   include <stdlib.h>
 #	ifdef SL_PLATFORM_ANDROID
 #		include <limits.h>
 #	endif
