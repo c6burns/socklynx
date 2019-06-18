@@ -103,7 +103,7 @@
 
 #if SL_C_MSC 
 #	define SL_CALL __cdecl
-#	define SL_INLINE __forceinline
+#	define SL_INLINE static __forceinline inline
 
 #	ifdef SL_EXPORTS
 #		define SL_API __declspec(dllexport)
@@ -111,7 +111,7 @@
 #		define SL_API __declspec(dllimport)
 #	endif
 #elif SL_C_GCC || SL_C_CLANG
-#	define SL_INLINE __attribute__((always_inline))
+#	define SL_INLINE static __attribute__((always_inline)) inline
 #	define SL_CALL
 #	define SL_API
 #else

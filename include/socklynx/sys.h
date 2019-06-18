@@ -24,6 +24,7 @@
 #define SL_SYS_H
 
 #include "socklynx/common.h"
+#include "socklynx/error.h"
 
 enum sl_sys_state {
 	SL_SYS_STATE_STOPPED,
@@ -40,7 +41,7 @@ SL_INLINE int sl_sys_errno(void)
 	/* PLATFORM TODO: extend OS error retrieval for your console platform */
 #if SL_SOCK_API_WINSOCK
 	return WSAGetLastError();
-#elif
+#else
 	return errno;
 #endif
 	return SL_OK;

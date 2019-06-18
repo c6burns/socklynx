@@ -20,6 +20,8 @@
  * SOFTWARE.
  */
 
+#include <errno.h>
+
 #ifndef SL_ERROR_H
 #define SL_ERROR_H
 

@@ -24,14 +24,17 @@
 #define SL_ENDPOINT_H
 
 #include "socklynx/common.h"
+#include "socklynx/error.h"
 
 #if SL_PLATFORM_WINDOWS || SL_PLATFORM_XBONE
 #	include <winsock2.h>
 #	include <ws2ipdef.h>
-#elif
+#else
 #	include <unistd.h>
 #	include <fcntl.h>
 #	include <sys/socket.h>
+#	include <netinet/in.h>
+#	include <netinet/ip.h>
 #endif
 
 typedef struct sockaddr_in sockaddr4;

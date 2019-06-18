@@ -27,10 +27,12 @@
 #include "socklynx/sys.h"
 #include "socklynx/endpoint.h"
 
+#include <memory.h>
+
 #if SL_PLATFORM_WINDOWS || SL_PLATFORM_XBONE
 #	include <winsock2.h>
 #	include <ws2ipdef.h>
-#elif
+#else
 #	include <unistd.h>
 #	include <fcntl.h>
 #	include <sys/socket.h>
@@ -101,7 +103,7 @@ SL_INLINE int sl_sock_create(sl_sock_t *sock, uint32_t af, uint32_t type, uint32
 	int64_t sockfd = socket(sl_endpoint_af(&sock->endpoint), sock->type, sock->proto);
 #if SL_SOCK_API_WINSOCK
 	if (sockfd == INVALID_SOCKET) {
-#elif
+#else
 	if (sockfd < 0) {
 #endif
 		sock->err = sl_sys_errno();
