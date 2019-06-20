@@ -46,7 +46,7 @@ typedef union sl_endpoint_u {
 } sl_endpoint_t;
 
 
-SL_INLINE_DECL uint16_t sl_endpoint_af(sl_endpoint_t *endpoint);
+SL_INLINE_DECL uint16_t sl_endpoint_af_get(sl_endpoint_t *endpoint);
 SL_INLINE_DECL uint16_t sl_endpoint_af_set(sl_endpoint_t *endpoint, int32_t af);
 SL_INLINE_DECL bool sl_endpoint_is_ipv4(sl_endpoint_t *endpoint);
 SL_INLINE_DECL bool sl_endpoint_is_ipv6(sl_endpoint_t *endpoint);
