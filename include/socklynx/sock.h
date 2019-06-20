@@ -26,10 +26,12 @@
 #include "socklynx/common.h"
 #include "socklynx/sys.h"
 #include "socklynx/endpoint.h"
+#include "socklynx/buf.h"
+
 
 #include <memory.h>
 
-#if SL_PLATFORM_WINDOWS || SL_PLATFORM_XBONE
+#if SL_SOCK_API_WINSOCK
 #	include <winsock2.h>
 #	include <ws2ipdef.h>
 #else
@@ -82,6 +84,11 @@ SL_INLINE_DECL int sl_sock_proto_set(sl_sock_t *sock, uint32_t proto);
 SL_INLINE_DECL int sl_sock_error_set(sl_sock_t *sock, uint32_t error);
 
 SL_INLINE_DECL int sl_sock_create(sl_sock_t *sock, uint32_t af, uint32_t type, uint32_t proto);
+SL_INLINE_DECL int sl_sock_bind(sl_sock_t *sock, void *addr, int addrlen);
+SL_INLINE_DECL int sl_sock_blocking_set(sl_sock_t *sock);
+SL_INLINE_DECL int sl_sock_nonblocking_set(sl_sock_t *sock);
+SL_INLINE_DECL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint);
+SL_INLINE_DECL int sl_sock_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint);
 
 
 #endif
