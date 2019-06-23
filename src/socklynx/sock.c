@@ -201,7 +201,7 @@ SL_INLINE_IMPL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
 #else
 	struct msghdr mhdr = { 0 };
 	mhdr.msg_name = endpoint;
-	mhdr.msg_namelen = (socklen_t)address->length;
+	mhdr.msg_namelen = (socklen_t)sizeof(*endpoint);
 	mhdr.msg_iov = (struct iovec *)buf;
 	mhdr.msg_iovlen = (size_t)bufcount;
 	if ((bytes_sent = (ssize_t)sendmsg(sock->fd, &mhdr, 0)) < 0) {
