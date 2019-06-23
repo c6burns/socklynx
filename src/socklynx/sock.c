@@ -191,7 +191,7 @@ SL_INLINE_IMPL int sl_sock_nonblocking_set(sl_sock_t *sock)
 SL_INLINE_IMPL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint)
 {
 	SL_ASSERT(sock);
-	SL_ASSERT(buf && bufcount);
+	SL_ASSERT(buf && bufcount > 0);
 	SL_ASSERT(endpoint);
 	SL_GUARD(sock->state != SL_SOCK_STATE_BOUND);
 
