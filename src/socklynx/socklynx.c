@@ -40,6 +40,13 @@ SL_API int32_t SL_CALL socklynx_cleanup(void)
 }
 
 
+SL_API int32_t SL_CALL socklynx_socket_nonblocking(sl_sock_t *sock, uint32_t enabled)
+{
+	if (enabled) return sl_sock_nonblocking_set(sock);
+	return sl_sock_blocking_set(sock);
+}
+
+
 SL_API int32_t SL_CALL socklynx_socket_open(sl_sock_t *sock, sl_endpoint_t *endpoint)
 {
 	SL_GUARD_NULL(sock);
