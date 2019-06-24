@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OSPlatformWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</OSPlatformWindows> 
+    <OSPlatformWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</OSPlatformWindows>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OSPlatformWindows)'=='true'">
     <DefineConstants>SL_SOCK_API_WINSOCK</DefineConstants>

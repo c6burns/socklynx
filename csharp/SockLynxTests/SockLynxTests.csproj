@@ -6,10 +6,16 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
+    <OSPlatformWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</OSPlatformWindows>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(OSPlatformWindows)'=='true'">
+    <DefineConstants>SL_SOCK_API_WINSOCK</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SockLynx\SockLynx.csproj" />
+    <!--<ProjectReference Include="../SockLynx/SockLynx.csproj" />-->
+    <Compile Include="../SockLynx/*.cs" />
   </ItemGroup>
 
   <ItemGroup>

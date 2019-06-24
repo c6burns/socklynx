@@ -70,15 +70,15 @@ namespace SL
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        public struct IPv4Addr
+        public struct IPv4
         {
             [FieldOffset(0)] public uint int_addr;
             [FieldOffset(0)] public fixed byte byte_addr[4];
 
             [MethodImpl(Inline)]
-            public static IPv4Addr New(byte b0, byte b1, byte b2, byte b3)
+            public static IPv4 New(byte b0, byte b1, byte b2, byte b3)
             {
-                IPv4Addr ip = default;
+                IPv4 ip = default;
                 ip.byte_addr[0] = b0;
                 ip.byte_addr[1] = b1;
                 ip.byte_addr[2] = b2;
@@ -88,15 +88,15 @@ namespace SL
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        public struct IPv6Addr
+        public struct IPv6
         {
             [FieldOffset(0)] public fixed byte byte_addr[16];
             [FieldOffset(0)] public fixed ushort short_addr[8];
 
             [MethodImpl(Inline)]
-            public static IPv6Addr New(ushort s0, ushort s1, ushort s2, ushort s3, ushort s4, ushort s5, ushort s6, ushort s7)
+            public static IPv6 New(ushort s0, ushort s1, ushort s2, ushort s3, ushort s4, ushort s5, ushort s6, ushort s7)
             {
-                IPv6Addr ip = default;
+                IPv6 ip = default;
                 ip.short_addr[0] = Util.HtoN(s0);
                 ip.short_addr[1] = Util.HtoN(s1);
                 ip.short_addr[2] = Util.HtoN(s2);
@@ -108,7 +108,7 @@ namespace SL
                 return ip;
             }
             [MethodImpl(Inline)]
-            public static IPv6Addr New(int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7)
+            public static IPv6 New(int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7)
             {
                 return New((ushort)s0, (ushort)s1, (ushort)s2, (ushort)s3, (ushort)s4, (ushort)s5, (ushort)s6, (ushort)s7);
             }
@@ -118,19 +118,19 @@ namespace SL
         public struct Endpoint
         {
             /* common members */
-            [FieldOffset(0)] private AF af;
+            [FieldOffset(0)] internal AF af;
             [FieldOffset(2)] public ushort port;
 
             /* ipv4 members */
-            [FieldOffset(4)] public IPv4Addr addr4;
+            [FieldOffset(4)] public IPv4 addr4;
 
             /* ipv6 members */
             [FieldOffset(4)] public uint flowinfo;
-            [FieldOffset(8)] public IPv6Addr addr6;
+            [FieldOffset(8)] public IPv6 addr6;
             [FieldOffset(24)] public uint scope_id;
 
             [MethodImpl(Inline)]
-            public static Endpoint NewV4(ushort port = 0, IPv4Addr addr4 = default)
+            public static Endpoint NewV4(ushort port = 0, IPv4 addr4 = default)
             {
                 Endpoint endpoint = default;
                 endpoint.af = AF.IPv4;
@@ -139,13 +139,13 @@ namespace SL
                 return endpoint;
             }
             [MethodImpl(Inline)]
-            public static Endpoint NewV4(int port = 0, IPv4Addr addr4 = default)
+            public static Endpoint NewV4(int port = 0, IPv4 addr4 = default)
             {
                 return NewV4((ushort)port, addr4);
             }
 
             [MethodImpl(Inline)]
-            public static Endpoint NewV6(ushort port = 0, IPv6Addr addr6 = default, uint flowinfo = 0, uint scope_id = 0)
+            public static Endpoint NewV6(ushort port = 0, IPv6 addr6 = default, uint flowinfo = 0, uint scope_id = 0)
             {
                 Endpoint endpoint = default;
                 endpoint.af = AF.IPv6;
@@ -156,7 +156,7 @@ namespace SL
                 return endpoint;
             }
             [MethodImpl(Inline)]
-            public static Endpoint NewV6(int port = 0, IPv6Addr addr6 = default, uint flowinfo = 0, uint scope_id = 0)
+            public static Endpoint NewV6(int port = 0, IPv6 addr6 = default, uint flowinfo = 0, uint scope_id = 0)
             {
                 return NewV6((ushort)port, addr6, flowinfo, scope_id);
             }
@@ -166,14 +166,14 @@ namespace SL
         public struct Socket
         {
             /*
-             * private members are handled on native side, for good reason
+             * internal members are handled on native side, for good reason
              * eg. sock type and proto are defined differently on diff platforms
              */
-            Int64 fd;
-            uint dir;
-            uint state;
-            uint type;
-            uint proto;
+            internal Int64 fd;
+            internal uint dir;
+            internal uint state;
+            internal uint type;
+            internal uint proto;
             public uint error;
             public Endpoint endpoint;
 

@@ -25,11 +25,11 @@ using SL;
 using System;
 using System.Net;
 
-public unsafe class SLUnitTests
+public unsafe class SLNativeUnit
 {
-    const UInt16 LISTEN_PORT = 58343;
+    const ushort LISTEN_PORT = 58343;
 
-    UInt16 _port = Util.HtoN(LISTEN_PORT);
+    ushort _port = Util.HtoN(LISTEN_PORT);
 
     [OneTimeSetUp]
     public void FixtureSetup()
@@ -79,6 +79,8 @@ public unsafe class SLUnitTests
         Random rand = new Random();
         byte[] src = new byte[16];
         rand.NextBytes(src);
+        for (int i = 0; i < src.Length; i++)
+            src[i] = Math.Min(src[i], (byte)1);
 
         fixed (byte* psrc = src)
         fixed (byte* pdst = dst)
@@ -121,12 +123,12 @@ public unsafe class SLUnitTests
     }
 
     [Test]
-    public void IPv4_NewFromHost()
+    public void C_IPv4_NewFromHost()
     {
-        C.IPv4Addr ipv4 = C.IPv4Addr.New(127, 0, 0, 1);
+        C.IPv4 ipv4 = C.IPv4.New(127, 0, 0, 1);
 
         /* certainty */
-        C.IPv4Addr ip = default;
+        C.IPv4 ip = default;
         ip.byte_addr[0] = 1;
         ip.byte_addr[1] = 0;
         ip.byte_addr[2] = 0;
@@ -136,19 +138,19 @@ public unsafe class SLUnitTests
         /* ridiculous certainty */
         Assert.True(IPAddress.TryParse("127.0.0.1", out IPAddress netip));
         fixed (byte* pSrc = netip.GetAddressBytes())
-            Assert.AreEqual(ipv4.int_addr, *(UInt32*)pSrc);
+            Assert.AreEqual(ipv4.int_addr, *(uint*)pSrc);
 
         /* ludicrous certainty */
-        UInt32 addr = (127 << 24) | 1;
+        uint addr = (127 << 24) | 1;
         Assert.AreEqual(ipv4.int_addr, Util.HtoN(addr));
     }
 
     [Test]
-    public void IPv6_NewFromHost()
+    public void C_IPv6_NewFromHost()
     {
         Assert.True(IPAddress.TryParse("fe80::300e:5130:704b:a647%21", out IPAddress netip));
 
-        C.IPv6Addr ipv6 = C.IPv6Addr.New(0xfe80, 0, 0, 0, 0x300e, 0x5130, 0x704b, 0xa647);
+        C.IPv6 ipv6 = C.IPv6.New(0xfe80, 0, 0, 0, 0x300e, 0x5130, 0x704b, 0xa647);
 
         byte[] src = netip.GetAddressBytes();
         for (int i = 0; i < src.Length; i++)
@@ -156,7 +158,7 @@ public unsafe class SLUnitTests
     }
 
     [Test]
-    public void Buffer_Size()
+    public void C_Buffer_Size()
     {
         if (IntPtr.Size == 8)
         {
@@ -169,7 +171,7 @@ public unsafe class SLUnitTests
     }
 
     [Test]
-    public void Buffer_New()
+    public void C_Buffer_New()
     {
         Random rand = new Random();
         byte[] src = new byte[1408];
@@ -179,7 +181,53 @@ public unsafe class SLUnitTests
         {
             C.Buffer buffer = C.Buffer.New(psrc, src.Length);
             Assert.AreEqual((UIntPtr)buffer.buf, (UIntPtr)psrc);
-            Assert.AreEqual(buffer.len, (uint)src.Length);
+            Assert.AreEqual((UIntPtr)buffer.len, (UIntPtr)src.Length);
         }
+    }
+
+    [Test]
+    public void C_Endpoint_NewV4()
+    {
+        Assert.True(IPAddress.TryParse("127.0.0.1", out IPAddress netip));
+
+        C.Endpoint endpoint = C.Endpoint.NewV4(_port, C.IPv4.New(127, 0, 0, 1));
+        Assert.AreEqual(endpoint.af, C.AF.IPv4);
+        Assert.AreEqual(endpoint.port, _port);
+
+        fixed (byte* pnetip = netip.GetAddressBytes())
+            Assert.True(Util.MemCmp((byte*)&endpoint.addr4, 0, pnetip, 0, sizeof(C.IPv4)));
+    }
+
+    [Test]
+    public void C_Endpoint_NewV6()
+    {
+        Assert.True(IPAddress.TryParse("fe80::300e:5130:704b:a647%21", out IPAddress netip));
+
+        C.Endpoint endpoint = C.Endpoint.NewV6(_port, C.IPv6.New(0xfe80, 0, 0, 0, 0x300e, 0x5130, 0x704b, 0xa647));
+        Assert.AreEqual(endpoint.af, C.AF.IPv6);
+        Assert.AreEqual(endpoint.port, _port);
+
+        fixed (byte* pnetip = netip.GetAddressBytes())
+            Assert.True(Util.MemCmp((byte*)&endpoint.addr6, 0, pnetip, 0, sizeof(C.IPv6)));
+    }
+
+    [Test]
+    public void C_Socket_NewUDP()
+    {
+        Assert.True(IPAddress.TryParse("fe80::300e:5130:704b:a647%21", out IPAddress netip));
+
+        C.Socket sock = C.Socket.NewUDP(C.Endpoint.NewV6(_port, C.IPv6.New(0xfe80, 0, 0, 0, 0x300e, 0x5130, 0x704b, 0xa647)));
+        Assert.AreEqual(sock.fd, 0);
+        Assert.AreEqual(sock.dir, 0);
+        Assert.AreEqual(sock.state, 0);
+        Assert.AreEqual(sock.type, 0);
+        Assert.AreEqual(sock.proto, 0);
+        Assert.AreEqual(sock.error, 0);
+        Assert.AreEqual(sock.endpoint.port, _port);
+        Assert.AreEqual(sock.endpoint.af, C.AF.IPv6);
+
+
+        fixed (byte* pnetip = netip.GetAddressBytes())
+            Assert.True(Util.MemCmp((byte*)&sock.endpoint.addr6, 0, pnetip, 0, sizeof(C.IPv6)));
     }
 }
