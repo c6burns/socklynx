@@ -28,13 +28,13 @@
 /* PLATFORM TODO: extend buffer definition for your platform */
 #if SL_SOCK_API_WINSOCK
 struct sl_buf_s {
-	uint32_t len;
-	char *base;
+    uint32_t len;
+    char *base;
 };
 #else
 struct sl_buf_s {
-	char *base;
-	size_t len;
+    char *base;
+    size_t len;
 };
 #endif
 

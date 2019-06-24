@@ -24,7 +24,6 @@
 
 #include "socklynx/sock.h"
 
-
 SL_INLINE_IMPL uint16_t sl_endpoint_af_get(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);

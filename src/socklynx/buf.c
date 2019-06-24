@@ -21,4 +21,3 @@
  */
 
 #include "socklynx/buf.h"
-

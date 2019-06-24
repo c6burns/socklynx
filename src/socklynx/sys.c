@@ -23,7 +23,7 @@
 #include "socklynx/sys.h"
 
 #if SL_SOCK_API_WINSOCK
-#	include <winsock2.h>
+#    include <winsock2.h>
 #endif
 
 SL_INLINE_IMPL int sl_sys_errno(void)

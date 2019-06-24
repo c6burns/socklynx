@@ -35,10 +35,8 @@ typedef struct sl_sys_s {
     enum sl_sys_state state;
 } sl_sys_t;
 
-
 SL_INLINE_DECL int sl_sys_errno(void);
 SL_INLINE_DECL int sl_sys_setup(sl_sys_t *sys);
 SL_INLINE_DECL int sl_sys_cleanup(sl_sys_t *sys);
-
 
 #endif

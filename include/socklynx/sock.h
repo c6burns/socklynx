@@ -23,21 +23,20 @@
 #ifndef SL_SOCK_H
 #define SL_SOCK_H
 
-#include "socklynx/common.h"
-#include "socklynx/sys.h"
-#include "socklynx/endpoint.h"
 #include "socklynx/buf.h"
-
+#include "socklynx/common.h"
+#include "socklynx/endpoint.h"
+#include "socklynx/sys.h"
 
 #include <memory.h>
 
 #if SL_SOCK_API_WINSOCK
-#	include <winsock2.h>
-#	include <ws2ipdef.h>
+#    include <winsock2.h>
+#    include <ws2ipdef.h>
 #else
-#	include <unistd.h>
-#	include <fcntl.h>
-#	include <sys/socket.h>
+#    include <fcntl.h>
+#    include <sys/socket.h>
+#    include <unistd.h>
 #endif
 
 /* sock state */
@@ -77,7 +76,6 @@ typedef struct sl_sock_s {
     sl_endpoint_t endpoint;
 } sl_sock_t;
 
-
 SL_INLINE_DECL int sl_sock_fd_set(sl_sock_t *sock, int64_t sockfd);
 SL_INLINE_DECL int sl_sock_dir_set(sl_sock_t *sock, uint32_t dir);
 SL_INLINE_DECL int sl_sock_state_set(sl_sock_t *sock, uint32_t state);
@@ -92,6 +90,5 @@ SL_INLINE_DECL int sl_sock_blocking_set(sl_sock_t *sock);
 SL_INLINE_DECL int sl_sock_nonblocking_set(sl_sock_t *sock);
 SL_INLINE_DECL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint);
 SL_INLINE_DECL int sl_sock_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint);
-
 
 #endif

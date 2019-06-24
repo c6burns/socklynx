@@ -27,14 +27,14 @@
 #include "socklynx/error.h"
 
 #if SL_PLATFORM_WINDOWS || SL_PLATFORM_XBONE
-#	include <winsock2.h>
-#	include <ws2ipdef.h>
+#    include <winsock2.h>
+#    include <ws2ipdef.h>
 #else
-#	include <unistd.h>
-#	include <fcntl.h>
-#	include <sys/socket.h>
-#	include <netinet/in.h>
-#	include <netinet/ip.h>
+#    include <fcntl.h>
+#    include <netinet/in.h>
+#    include <netinet/ip.h>
+#    include <sys/socket.h>
+#    include <unistd.h>
 #endif
 
 typedef struct sockaddr_in sockaddr4;
@@ -45,13 +45,11 @@ typedef union sl_endpoint_u {
     sockaddr6 addr6;
 } sl_endpoint_t;
 
-
 SL_INLINE_DECL uint16_t sl_endpoint_af_get(sl_endpoint_t *endpoint);
 SL_INLINE_DECL int sl_endpoint_af_set(sl_endpoint_t *endpoint, uint16_t af);
 SL_INLINE_DECL struct sockaddr *sl_endpoint_addr_get(sl_endpoint_t *endpoint);
 SL_INLINE_DECL bool sl_endpoint_is_ipv4(sl_endpoint_t *endpoint);
 SL_INLINE_DECL bool sl_endpoint_is_ipv6(sl_endpoint_t *endpoint);
 SL_INLINE_DECL int sl_endpoint_size(sl_endpoint_t *endpoint);
-
 
 #endif
