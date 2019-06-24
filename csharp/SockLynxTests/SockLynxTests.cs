@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2019 Chris Burns <chris@kitty.city>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 using NUnit.Framework;
 using SL;
 using System;
@@ -83,6 +105,8 @@ public unsafe class SLUnitTests
         Random rand = new Random();
         byte[] src = new byte[16];
         rand.NextBytes(src);
+        for (int i = 0; i < src.Length; i++)
+            src[i] = Math.Min(src[i], (byte)1);
 
         fixed (byte* psrc = src)
         fixed (byte* pdst = dst)
@@ -129,5 +153,33 @@ public unsafe class SLUnitTests
         byte[] src = netip.GetAddressBytes();
         for (int i = 0; i < src.Length; i++)
             Assert.AreEqual(ipv6.byte_addr[i], src[i]);
+    }
+
+    [Test]
+    public void Buffer_Size()
+    {
+        if (IntPtr.Size == 8)
+        {
+            Assert.AreEqual(sizeof(C.Buffer), 16);
+        }
+        else
+        {
+            Assert.AreEqual(sizeof(C.Buffer), 8);
+        }
+    }
+
+    [Test]
+    public void Buffer_New()
+    {
+        Random rand = new Random();
+        byte[] src = new byte[1408];
+        rand.NextBytes(src);
+
+        fixed (byte* psrc = src)
+        {
+            C.Buffer buffer = C.Buffer.New(psrc, src.Length);
+            Assert.AreEqual((UIntPtr)buffer.buf, (UIntPtr)psrc);
+            Assert.AreEqual(buffer.len, (uint)src.Length);
+        }
     }
 }

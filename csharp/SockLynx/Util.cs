@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-/*
+﻿/*
  * Copyright (c) 2019 Chris Burns <chris@kitty.city>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,96 +20,100 @@
  * SOFTWARE.
  */
 
+using System.Runtime.CompilerServices;
+
 namespace SL
 {
     public class Util
     {
+        const MethodImplOptions Inline = MethodImplOptions.AggressiveInlining;
+
         /* these methods assume little endian */
         #region Endian Swapping
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static ushort HtoN(ushort input)
         {
             return (ushort)((input >> 8) + (input << 8));
         }
-        public static short HtoN(short input) => (short)HtoN((ushort)input);
-        public static ushort NtoH(ushort input) => HtoN(input);
-        public static short NtoH(short input) => (short)HtoN((ushort)input);
+        [MethodImpl(Inline)] public static short HtoN(short input) => (short)HtoN((ushort)input);
+        [MethodImpl(Inline)] public static ushort NtoH(ushort input) => HtoN(input);
+        [MethodImpl(Inline)] public static short NtoH(short input) => (short)HtoN((ushort)input);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static uint HtoN(uint input)
         {
             uint num1 = input & 0x00FF00FFu;
             uint num2 = input & 0xFF00FF00u;
             return (num1 >> 8 | num1 << 24) + (num2 << 8 | num2 >> 24);
         }
-        public static int HtoN(int input) => (int)HtoN((uint)input);
-        public static uint NtoH(uint input) => HtoN(input);
-        public static int NtoH(int input) => (int)HtoN((uint)input);
+        [MethodImpl(Inline)] public static int HtoN(int input) => (int)HtoN((uint)input);
+        [MethodImpl(Inline)] public static uint NtoH(uint input) => HtoN(input);
+        [MethodImpl(Inline)] public static int NtoH(int input) => (int)HtoN((uint)input);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static ulong HtoN(ulong input)
         {
             return ((ulong)HtoN((uint)input) << 32) + HtoN((uint)(input >> 32));
         }
-        public static long HtoN(long input) => (long)HtoN((ulong)input);
-        public static ulong NtoH(ulong input) => HtoN(input);
-        public static long NtoH(long input) => (long)HtoN((ulong)input);
+        [MethodImpl(Inline)] public static long HtoN(long input) => (long)HtoN((ulong)input);
+        [MethodImpl(Inline)] public static ulong NtoH(ulong input) => HtoN(input);
+        [MethodImpl(Inline)] public static long NtoH(long input) => (long)HtoN((ulong)input);
         #endregion
 
         #region Unsafe MemCpy / MemCmp
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe void Copy1(byte* pdst, byte* psrc)
         {
             *pdst = *psrc;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe void Copy2(byte* pdst, byte* psrc)
         {
             *(ushort*)pdst = *(ushort*)psrc;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe void Copy3(byte* pdst, byte* psrc)
         {
             *(ushort*)(pdst + 0) = *(ushort*)(psrc + 0);
             *(ushort*)(pdst + 1) = *(ushort*)(psrc + 1);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe void Copy4(byte* pdst, byte* psrc)
         {
             *(uint*)pdst = *(uint*)psrc;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe void Copy5(byte* pdst, byte* psrc)
         {
             *(uint*)(pdst + 0) = *(uint*)(psrc + 0);
             *(uint*)(pdst + 1) = *(uint*)(psrc + 1);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe void Copy6(byte* pdst, byte* psrc)
         {
             *(uint*)(pdst + 0) = *(uint*)(psrc + 0);
             *(uint*)(pdst + 2) = *(uint*)(psrc + 2);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe void Copy7(byte* pdst, byte* psrc)
         {
             *(uint*)(pdst + 0) = *(uint*)(psrc + 0);
             *(uint*)(pdst + 3) = *(uint*)(psrc + 3);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe void Copy8(byte* pdst, byte* psrc)
         {
             *(ulong*)pdst = *(ulong*)psrc;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static unsafe void MemCpy(byte* dst, int dstOffset, byte* src, int srcOffset, int byteLength)
         {
             byte* psrc = src + srcOffset;
@@ -152,55 +154,55 @@ namespace SL
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe bool Cmp1(byte* pdst, byte* psrc)
         {
             return (*pdst == *psrc);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe bool Cmp2(byte* pdst, byte* psrc)
         {
             return (*(ushort*)pdst == *(ushort*)psrc);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe bool Cmp3(byte* pdst, byte* psrc)
         {
             return (*(ushort*)(pdst + 0) == *(ushort*)(psrc + 0)) && (*(ushort*)(pdst + 1) == *(ushort*)(psrc + 1));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe bool Cmp4(byte* pdst, byte* psrc)
         {
             return (*(uint*)pdst == *(uint*)psrc);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe bool Cmp5(byte* pdst, byte* psrc)
         {
             return (*(uint*)(pdst + 0) == *(uint*)(psrc + 0)) && (*(uint*)(pdst + 1) == *(uint*)(psrc + 1));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe bool Cmp6(byte* pdst, byte* psrc)
         {
             return (*(uint*)(pdst + 0) == *(uint*)(psrc + 0)) && (*(uint*)(pdst + 2) == *(uint*)(psrc + 2));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe bool Cmp7(byte* pdst, byte* psrc)
         {
             return (*(uint*)(pdst + 0) == *(uint*)(psrc + 0)) && (*(uint*)(pdst + 3) == *(uint*)(psrc + 3));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         private static unsafe bool Cmp8(byte* pdst, byte* psrc)
         {
             return (*(ulong*)pdst == *(ulong*)psrc);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static unsafe bool MemCmp(byte* dst, int dstOffset, byte* src, int srcOffset, int byteLength)
         {
             byte* psrc = src + srcOffset;

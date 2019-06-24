@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+ * Copyright (c) 2019 Chris Burns <chris@kitty.city>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+using System;
 using System.Security;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
@@ -8,18 +30,30 @@ namespace SL
     [SuppressUnmanagedCodeSecurity]
     public static unsafe class C
     {
+        const MethodImplOptions Inline = MethodImplOptions.AggressiveInlining;
+
+        public enum AF : ushort
+        {
+            INET = 2,
+#if SL_SOCK_API_WINSOCK
+            INET6 = 23,
+#else
+            INET6 = 10,
+#endif
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public struct Buffer
         {
 #if SL_SOCK_API_WINSOCK
-            public UInt32 len;
+            public uint len;
             public byte* buf;
 #else
             public byte* buf;
             public UIntPtr len;
 #endif
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static Buffer New(byte* buf, UInt32 len)
+            [MethodImpl(Inline)]
+            public static Buffer New(byte* buf, uint len)
             {
                 Buffer buffer = default;
                 buffer.buf = buf;
@@ -30,15 +64,18 @@ namespace SL
 #endif
                 return buffer;
             }
+            [MethodImpl(Inline)] public static Buffer New(byte* buf, int len) => New(buf, (uint)len);
+            [MethodImpl(Inline)] public static Buffer New(byte* buf, IntPtr len) => New(buf, (uint)len);
+            [MethodImpl(Inline)] public static Buffer New(byte* buf, UIntPtr len) => New(buf, (uint)len);
         }
 
         [StructLayout(LayoutKind.Explicit)]
         public struct IPv4Addr
         {
-            [FieldOffset(0)] public UInt32 int_addr;
+            [FieldOffset(0)] public uint int_addr;
             [FieldOffset(0)] public fixed byte byte_addr[4];
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(Inline)]
             public static IPv4Addr New(byte b0, byte b1, byte b2, byte b3)
             {
                 IPv4Addr ip = default;
@@ -54,20 +91,26 @@ namespace SL
         public struct IPv6Addr
         {
             [FieldOffset(0)] public fixed byte byte_addr[16];
-            [FieldOffset(0)] public fixed UInt16 short_addr[8];
+            [FieldOffset(0)] public fixed ushort short_addr[8];
 
-            public static IPv6Addr New(int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7)
+            [MethodImpl(Inline)]
+            public static IPv6Addr New(ushort s0, ushort s1, ushort s2, ushort s3, ushort s4, ushort s5, ushort s6, ushort s7)
             {
                 IPv6Addr ip = default;
-                ip.short_addr[0] = Util.HtoN((UInt16)s0);
-                ip.short_addr[1] = Util.HtoN((UInt16)s1);
-                ip.short_addr[2] = Util.HtoN((UInt16)s2);
-                ip.short_addr[3] = Util.HtoN((UInt16)s3);
-                ip.short_addr[4] = Util.HtoN((UInt16)s4);
-                ip.short_addr[5] = Util.HtoN((UInt16)s5);
-                ip.short_addr[6] = Util.HtoN((UInt16)s6);
-                ip.short_addr[7] = Util.HtoN((UInt16)s7);
+                ip.short_addr[0] = Util.HtoN(s0);
+                ip.short_addr[1] = Util.HtoN(s1);
+                ip.short_addr[2] = Util.HtoN(s2);
+                ip.short_addr[3] = Util.HtoN(s3);
+                ip.short_addr[4] = Util.HtoN(s4);
+                ip.short_addr[5] = Util.HtoN(s5);
+                ip.short_addr[6] = Util.HtoN(s6);
+                ip.short_addr[7] = Util.HtoN(s7);
                 return ip;
+            }
+            [MethodImpl(Inline)]
+            public static IPv6Addr New(int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7)
+            {
+                return New((ushort)s0, (ushort)s1, (ushort)s2, (ushort)s3, (ushort)s4, (ushort)s5, (ushort)s6, (ushort)s7);
             }
         }
 
@@ -75,77 +118,94 @@ namespace SL
         public struct Endpoint
         {
             /* common members */
-            [FieldOffset(0)] public UInt16 af;
-            [FieldOffset(2)] public UInt16 port;
+            [FieldOffset(0)] private AF af;
+            [FieldOffset(2)] public ushort port;
 
             /* ipv4 members */
             [FieldOffset(4)] public IPv4Addr addr4;
 
             /* ipv6 members */
-            [FieldOffset(4)] public UInt32 flowinfo;
+            [FieldOffset(4)] public uint flowinfo;
             [FieldOffset(8)] public IPv6Addr addr6;
-            [FieldOffset(24)] public UInt32 scope_id;
+            [FieldOffset(24)] public uint scope_id;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static Endpoint NewV4(UInt16 port = 0, IPv4Addr addr4 = default)
+            [MethodImpl(Inline)]
+            public static Endpoint NewV4(ushort port = 0, IPv4Addr addr4 = default)
             {
                 Endpoint endpoint = default;
-                endpoint.port = (UInt16)port;
+                endpoint.af = AF.INET;
+                endpoint.port = port;
                 endpoint.addr4 = addr4;
                 return endpoint;
             }
+            [MethodImpl(Inline)]
+            public static Endpoint NewV4(int port = 0, IPv4Addr addr4 = default)
+            {
+                return NewV4((ushort)port, addr4);
+            }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static Endpoint NewV6(UInt16 port = 0, IPv6Addr addr6 = default, UInt32 flowinfo = 0, UInt32 scope_id = 0)
+            [MethodImpl(Inline)]
+            public static Endpoint NewV6(ushort port = 0, IPv6Addr addr6 = default, uint flowinfo = 0, uint scope_id = 0)
             {
                 Endpoint endpoint = default;
-                endpoint.port = (UInt16)port;
+                endpoint.af = AF.INET6;
+                endpoint.port = (ushort)port;
                 endpoint.flowinfo = flowinfo;
                 endpoint.scope_id = scope_id;
                 endpoint.addr6 = addr6;
                 return endpoint;
+            }
+            [MethodImpl(Inline)]
+            public static Endpoint NewV6(int port = 0, IPv6Addr addr6 = default, uint flowinfo = 0, uint scope_id = 0)
+            {
+                return NewV6((ushort)port, addr6, flowinfo, scope_id);
             }
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct Socket
         {
+            /*
+             * private members are handled on native side, for good reason
+             * eg. sock type and proto are defined differently on diff platforms
+             */
             Int64 fd;
-            UInt32 dir;
-            UInt32 state;
-            UInt32 type;
-            UInt32 proto;
-            UInt32 error;
-            Endpoint endpoint;
+            uint dir;
+            uint state;
+            uint type;
+            uint proto;
+            public uint error;
+            public Endpoint endpoint;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static Socket New()
+            [MethodImpl(Inline)]
+            public static Socket NewUDP(Endpoint endpoint = default)
             {
                 Socket sock = default;
+                sock.endpoint = endpoint;
                 return sock;
             }
         }
 
 
         [DllImport("socklynx", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern Int32 socklynx_setup();
+        internal static extern int socklynx_setup();
 
         [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern Int32 socklynx_cleanup();
+        internal static extern int socklynx_cleanup();
 
         [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern Int32 socklynx_socket_nonblocking(Socket* sock, Int32 enabled);
+        internal static extern int socklynx_socket_nonblocking(Socket* sock, int enabled);
 
         [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern Int32 socklynx_socket_open(Socket* sock, Endpoint* endpoint);
+        internal static extern int socklynx_socket_open(Socket* sock, Endpoint* endpoint);
 
         [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern Int32 socklynx_socket_close(Socket* sock);
+        internal static extern int socklynx_socket_close(Socket* sock);
 
         [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern Int32 socklynx_socket_send(Socket* sock, Buffer* buf, Int32 bufcount, Endpoint* endpoint);
+        internal static extern int socklynx_socket_send(Socket* sock, Buffer* buf, int bufcount, Endpoint* endpoint);
 
         [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern Int32 socklynx_socket_recv(Socket* sock, Buffer* buf, Int32 bufcount, Endpoint* endpoint);
+        internal static extern int socklynx_socket_recv(Socket* sock, Buffer* buf, int bufcount, Endpoint* endpoint);
     }
 }

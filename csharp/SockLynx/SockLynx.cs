@@ -20,7 +20,6 @@
  * SOFTWARE.
  */
 
-using System;
 using System.Runtime.CompilerServices;
 
 namespace SL
@@ -28,44 +27,45 @@ namespace SL
     public static unsafe class UDP
     {
         const int SL_OK = 0;
+        const MethodImplOptions Inline = MethodImplOptions.AggressiveInlining;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static bool Setup()
         {
             return (C.socklynx_setup() == SL_OK);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static bool Cleanup()
         {
             return (C.socklynx_cleanup() == SL_OK);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static bool SocketOpen(C.Socket* sock, C.Endpoint* endpoint)
         {
             return (C.socklynx_socket_open(sock, endpoint) == SL_OK);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static bool SocketClose(C.Socket* sock)
         {
             return (C.socklynx_socket_close(sock) == SL_OK);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static bool SocketNonBlocking(C.Socket* sock, bool enabled)
         {
             return (C.socklynx_socket_nonblocking(sock, enabled ? 1 : 0) == SL_OK);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static int SocketSend(C.Socket* sock, C.Buffer* bufferArray, int bufferCount, C.Endpoint* endpoint)
         {
             return C.socklynx_socket_send(sock, bufferArray, bufferCount, endpoint);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Inline)]
         public static int SocketRecv(C.Socket* sock, C.Buffer* bufferArray, int bufferCount, C.Endpoint* endpoint)
         {
             return C.socklynx_socket_recv(sock, bufferArray, bufferCount, endpoint);
