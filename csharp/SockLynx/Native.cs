@@ -12,60 +12,97 @@ namespace SL
         public struct Buffer
         {
 #if SL_SOCK_API_WINSOCK
-            UInt32 len;
-            byte* buf;
+            public UInt32 len;
+            public byte* buf;
 #else
-            byte* buf;
-            UIntPtr len;
+            public byte* buf;
+            public UIntPtr len;
 #endif
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static Buffer New(byte* buf, UInt32 len)
             {
                 Buffer buffer = default;
                 buffer.buf = buf;
+#if SL_SOCK_API_WINSOCK
                 buffer.len = len;
+#else
+                buffer.len = (UIntPtr)len;
+#endif
                 return buffer;
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct IPV6Addr
+        [StructLayout(LayoutKind.Explicit)]
+        public struct IPv4Addr
         {
-            public fixed byte addr6[16];
+            [FieldOffset(0)] public UInt32 int_addr;
+            [FieldOffset(0)] public fixed byte byte_addr[4];
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static IPv4Addr New(byte b0, byte b1, byte b2, byte b3)
+            {
+                IPv4Addr ip = default;
+                ip.byte_addr[0] = b0;
+                ip.byte_addr[1] = b1;
+                ip.byte_addr[2] = b2;
+                ip.byte_addr[3] = b3;
+                return ip;
+            }
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 28)]
+        [StructLayout(LayoutKind.Explicit)]
+        public struct IPv6Addr
+        {
+            [FieldOffset(0)] public fixed byte byte_addr[16];
+            [FieldOffset(0)] public fixed UInt16 short_addr[8];
+
+            public static IPv6Addr New(int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7)
+            {
+                IPv6Addr ip = default;
+                ip.short_addr[0] = Util.HtoN((UInt16)s0);
+                ip.short_addr[1] = Util.HtoN((UInt16)s1);
+                ip.short_addr[2] = Util.HtoN((UInt16)s2);
+                ip.short_addr[3] = Util.HtoN((UInt16)s3);
+                ip.short_addr[4] = Util.HtoN((UInt16)s4);
+                ip.short_addr[5] = Util.HtoN((UInt16)s5);
+                ip.short_addr[6] = Util.HtoN((UInt16)s6);
+                ip.short_addr[7] = Util.HtoN((UInt16)s7);
+                return ip;
+            }
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
         public struct Endpoint
         {
             /* common members */
-            [FieldOffset(0)] UInt16 af;
-            [FieldOffset(2)] UInt16 port;
+            [FieldOffset(0)] public UInt16 af;
+            [FieldOffset(2)] public UInt16 port;
 
             /* ipv4 members */
-            [FieldOffset(4)] UInt32 addr4;
+            [FieldOffset(4)] public IPv4Addr addr4;
 
             /* ipv6 members */
-            [FieldOffset(4)] UInt32 flowinfo;
-            [FieldOffset(8)] IPV6Addr addr6;
-            [FieldOffset(24)] UInt32 scope_id;
+            [FieldOffset(4)] public UInt32 flowinfo;
+            [FieldOffset(8)] public IPv6Addr addr6;
+            [FieldOffset(24)] public UInt32 scope_id;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static Endpoint NewIPv4(UInt16 port = 0, UInt32 addr4 = 0)
+            public static Endpoint NewV4(UInt16 port = 0, IPv4Addr addr4 = default)
             {
                 Endpoint endpoint = default;
                 endpoint.port = (UInt16)port;
-                endpoint.addr4 = (UInt32)addr4;
+                endpoint.addr4 = addr4;
                 return endpoint;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static Endpoint NewIPv6(UInt16 port = 0, IPV6Addr* addr6 = null, UInt32 flowinfo = 0, UInt32 scope_id = 0)
+            public static Endpoint NewV6(UInt16 port = 0, IPv6Addr addr6 = default, UInt32 flowinfo = 0, UInt32 scope_id = 0)
             {
                 Endpoint endpoint = default;
                 endpoint.port = (UInt16)port;
                 endpoint.flowinfo = flowinfo;
                 endpoint.scope_id = scope_id;
-                if (addr6 != null) endpoint.addr6 = *addr6;
+                endpoint.addr6 = addr6;
                 return endpoint;
             }
         }
