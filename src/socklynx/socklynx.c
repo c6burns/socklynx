@@ -47,12 +47,10 @@ SL_API int32_t SL_CALL socklynx_socket_nonblocking(sl_sock_t *sock, uint32_t ena
 }
 
 
-SL_API int32_t SL_CALL socklynx_socket_open(sl_sock_t *sock, sl_endpoint_t *endpoint)
+SL_API int32_t SL_CALL socklynx_socket_open(sl_sock_t *sock)
 {
 	SL_GUARD_NULL(sock);
-	SL_GUARD_NULL(endpoint);
-	SL_GUARD(sl_sock_create(sock, sl_endpoint_af_get(endpoint), SL_SOCK_TYPE_DGRAM, SL_SOCK_PROTO_UDP));
-	memcpy(&sock->endpoint, endpoint, sizeof(*endpoint));
+	SL_GUARD(sl_sock_create(sock, sl_endpoint_af_get(&sock->endpoint), SL_SOCK_TYPE_DGRAM, SL_SOCK_PROTO_UDP));
 	SL_GUARD(sl_sock_bind(sock));
 	return SL_OK;
 }

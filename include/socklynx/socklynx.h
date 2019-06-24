@@ -34,7 +34,7 @@
 SL_API int32_t SL_CALL socklynx_setup(void);
 SL_API int32_t SL_CALL socklynx_cleanup(void);
 SL_API int32_t SL_CALL socklynx_socket_nonblocking(sl_sock_t *sock, uint32_t enabled);
-SL_API int32_t SL_CALL socklynx_socket_open(sl_sock_t *sock, sl_endpoint_t *endpoint);
+SL_API int32_t SL_CALL socklynx_socket_open(sl_sock_t *sock);
 SL_API int32_t SL_CALL socklynx_socket_close(sl_sock_t *sock);
 SL_API int32_t SL_CALL socklynx_socket_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint);
 SL_API int32_t SL_CALL socklynx_socket_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint);
