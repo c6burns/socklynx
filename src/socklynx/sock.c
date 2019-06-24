@@ -110,7 +110,6 @@ SL_INLINE_IMPL int sl_sock_create(sl_sock_t *sock, uint32_t af, uint32_t type, u
 	SL_ASSERT(sock);
 	SL_GUARD(sock->state != SL_SOCK_STATE_NEW);
 	
-	memset(sock, 0, sizeof(*sock));
 	SL_GUARD(sl_endpoint_af_set(&sock->endpoint, af));
 	SL_GUARD(sl_sock_type_set(sock, type));
 	SL_GUARD(sl_sock_proto_set(sock, proto));
