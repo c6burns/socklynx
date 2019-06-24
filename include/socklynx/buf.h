@@ -25,7 +25,7 @@
 
 #include "socklynx/common.h"
 
- /* PLATFORM TODO: extend buffer definition for your platform */
+/* PLATFORM TODO: extend buffer definition for your platform */
 #if SL_SOCK_API_WINSOCK
 struct sl_buf_s {
 	uint32_t len;

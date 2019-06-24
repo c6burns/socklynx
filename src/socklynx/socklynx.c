@@ -30,52 +30,52 @@ sl_sys_t g_sys = { 0 };
 
 SL_API int32_t SL_CALL socklynx_setup(void)
 {
-	return sl_sys_setup(&g_sys);
+    return sl_sys_setup(&g_sys);
 }
 
 
 SL_API int32_t SL_CALL socklynx_cleanup(void)
 {
-	return sl_sys_cleanup(&g_sys);
+    return sl_sys_cleanup(&g_sys);
 }
 
 
 SL_API int32_t SL_CALL socklynx_socket_nonblocking(sl_sock_t *sock, uint32_t enabled)
 {
-	if (enabled) return sl_sock_nonblocking_set(sock);
-	return sl_sock_blocking_set(sock);
+    if (enabled) return sl_sock_nonblocking_set(sock);
+    return sl_sock_blocking_set(sock);
 }
 
 
 SL_API int32_t SL_CALL socklynx_socket_open(sl_sock_t *sock)
 {
-	SL_GUARD_NULL(sock);
-	SL_GUARD(sl_sock_create(sock, sl_endpoint_af_get(&sock->endpoint), SL_SOCK_TYPE_DGRAM, SL_SOCK_PROTO_UDP));
-	SL_GUARD(sl_sock_bind(sock));
-	return SL_OK;
+    SL_GUARD_NULL(sock);
+    SL_GUARD(sl_sock_create(sock, sl_endpoint_af_get(&sock->endpoint), SL_SOCK_TYPE_DGRAM, SL_SOCK_PROTO_UDP));
+    SL_GUARD(sl_sock_bind(sock));
+    return SL_OK;
 }
 
 
 SL_API int32_t SL_CALL socklynx_socket_close(sl_sock_t *sock)
 {
-	SL_GUARD_NULL(sock);
-	return sl_sock_close(sock);
+    SL_GUARD_NULL(sock);
+    return sl_sock_close(sock);
 }
 
 
 SL_API int32_t SL_CALL socklynx_socket_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint)
 {
-	SL_GUARD_NULL(sock);
-	SL_GUARD_NULL(buf);
-	SL_GUARD_NULL(endpoint);
-	return sl_sock_send(sock, buf, bufcount, endpoint);
+    SL_GUARD_NULL(sock);
+    SL_GUARD_NULL(buf);
+    SL_GUARD_NULL(endpoint);
+    return sl_sock_send(sock, buf, bufcount, endpoint);
 }
 
 
 SL_API int32_t SL_CALL socklynx_socket_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint)
 {
-	SL_GUARD_NULL(sock);
-	SL_GUARD_NULL(buf);
-	SL_GUARD_NULL(endpoint);
-	return sl_sock_recv(sock, buf, bufcount, endpoint);
+    SL_GUARD_NULL(sock);
+    SL_GUARD_NULL(buf);
+    SL_GUARD_NULL(endpoint);
+    return sl_sock_recv(sock, buf, bufcount, endpoint);
 }

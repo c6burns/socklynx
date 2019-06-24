@@ -27,12 +27,12 @@
 #include "socklynx/error.h"
 
 enum sl_sys_state {
-	SL_SYS_STATE_STOPPED,
-	SL_SYS_STATE_STARTED,
+    SL_SYS_STATE_STOPPED,
+    SL_SYS_STATE_STARTED,
 };
 
 typedef struct sl_sys_s {
-	enum sl_sys_state state;
+    enum sl_sys_state state;
 } sl_sys_t;
 
 

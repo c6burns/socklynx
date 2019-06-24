@@ -41,8 +41,8 @@ typedef struct sockaddr_in sockaddr4;
 typedef struct sockaddr_in6 sockaddr6;
 
 typedef union sl_endpoint_u {
-	sockaddr4 addr4;
-	sockaddr6 addr6;
+    sockaddr4 addr4;
+    sockaddr6 addr6;
 } sl_endpoint_t;
 
 

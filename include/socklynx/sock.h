@@ -66,13 +66,13 @@
 #define SL_SOCK_PROTO_TCP IPPROTO_TCP
 
 typedef struct sl_sock_s {
-	int64_t fd;
-	uint32_t dir;
-	uint32_t state;
-	uint32_t type;
-	uint32_t proto;
-	uint32_t error;
-	sl_endpoint_t endpoint;
+    int64_t fd;
+    uint32_t dir;
+    uint32_t state;
+    uint32_t type;
+    uint32_t proto;
+    uint32_t error;
+    sl_endpoint_t endpoint;
 } sl_sock_t;
 
 
