@@ -35,6 +35,12 @@ SL_INLINE_IMPL int sl_endpoint_af_set(sl_endpoint_t *endpoint, uint16_t af)
 {
     SL_ASSERT(endpoint);
     switch (af) {
+    case SL_MANAGED_AF_IPV4:
+        endpoint->addr4.sin_family = SL_SOCK_AF_IPV4;
+        return SL_OK;
+    case SL_MANAGED_AF_IPV6:
+        endpoint->addr4.sin_family = SL_SOCK_AF_IPV6;
+        return SL_OK;
     case SL_SOCK_AF_IPV4:
     case SL_SOCK_AF_IPV6:
         endpoint->addr4.sin_family = af;

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2019 Chris Burns <chris@kitty.city>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,14 +32,14 @@ namespace SL
     {
         const MethodImplOptions Inline = MethodImplOptions.AggressiveInlining;
 
+        /*
+         * Address Family does NOT match up to the OS, it is converted on the C side
+         * the idea here is to use values that no platform would possibly be using
+         */
         public enum AF : ushort
         {
-            INET = 2,
-#if SL_SOCK_API_WINSOCK
-            INET6 = 23,
-#else
-            INET6 = 10,
-#endif
+            IPv4 = 12340,
+            IPv6 = 12341,
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -133,7 +133,7 @@ namespace SL
             public static Endpoint NewV4(ushort port = 0, IPv4Addr addr4 = default)
             {
                 Endpoint endpoint = default;
-                endpoint.af = AF.INET;
+                endpoint.af = AF.IPv4;
                 endpoint.port = port;
                 endpoint.addr4 = addr4;
                 return endpoint;
@@ -148,8 +148,8 @@ namespace SL
             public static Endpoint NewV6(ushort port = 0, IPv6Addr addr6 = default, uint flowinfo = 0, uint scope_id = 0)
             {
                 Endpoint endpoint = default;
-                endpoint.af = AF.INET6;
-                endpoint.port = (ushort)port;
+                endpoint.af = AF.IPv6;
+                endpoint.port = port;
                 endpoint.flowinfo = flowinfo;
                 endpoint.scope_id = scope_id;
                 endpoint.addr6 = addr6;

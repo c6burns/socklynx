@@ -54,6 +54,8 @@
 #define SL_SOCK_DIR_OUTGOING 2
 
 /* sock address family */
+#define SL_MANAGED_AF_IPV4 12340
+#define SL_MANAGED_AF_IPV6 12341
 #define SL_SOCK_AF_IPV4 AF_INET
 #define SL_SOCK_AF_IPV6 AF_INET6
 
