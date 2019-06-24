@@ -23,33 +23,52 @@
 cmake_minimum_required(VERSION 3.1)
 project(socklynx LANGUAGES C)
 
-include_directories(include)
-include_directories(src/socklynx)
-add_library(socklynx
+set(SL_SRCS
 	src/socklynx/socklynx.c
 	include/socklynx/socklynx.h
-	src/socklynx/endpoint.c
 	include/socklynx/endpoint.h
-	src/socklynx/buf.c
 	include/socklynx/buf.h
-	src/socklynx/sock.c
 	include/socklynx/sock.h
-	src/socklynx/sys.c
 	include/socklynx/sys.h
 	include/socklynx/common.h
 	include/socklynx/error.h
 )
+include_directories(include)
+include_directories(src/socklynx)
+add_library(socklynx MODULE ${SL_SRCS})
+if(WIN32)
+	target_link_libraries(socklynx Ws2_32.lib)
+endif()
 
-include_directories(src/socklynx_server)
-add_executable(socklynx_server
-	src/socklynx_server/server.c
-	include/socklynx_server/server.h
-)
-target_link_libraries(socklynx_server socklynx)
+#include_directories(src/socklynx_server)
+#add_executable(socklynx_server
+#	src/socklynx_server/server.c
+#	include/socklynx_server/server.h
+#)
+#target_link_libraries(socklynx_server socklynx)
 
-include_directories(src/socklynx_loadgen)
-add_executable(socklynx_loadgen
-	src/socklynx_loadgen/loadgen.c
-	include/socklynx_loadgen/loadgen.h
-)
-target_link_libraries(socklynx_loadgen socklynx)
+#include_directories(src/socklynx_loadgen)
+#add_executable(socklynx_loadgen
+#	src/socklynx_loadgen/loadgen.c
+#	include/socklynx_loadgen/loadgen.h
+#)
+#target_link_libraries(socklynx_loadgen socklynx)
+
+if(NOT APPLE)
+	add_custom_command(
+		TARGET socklynx
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+			$<TARGET_FILE:socklynx>
+			${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynx>
+	)
+else()
+	set_target_properties(socklynx PROPERTIES BUNDLE TRUE)
+	add_custom_command(
+		TARGET socklynx
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+			$<TARGET_FILE:socklynx>
+			${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynx>.bundle
+	)
+endif()

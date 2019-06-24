@@ -97,7 +97,7 @@
 #    define SL_C_NONE 1
 #endif
 
-#define SL_INLINE_DECL
+#define SL_INLINE_DECL inline
 #define SL_INLINE_IMPL inline
 
 #if SL_C_MSC

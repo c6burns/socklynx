@@ -37,6 +37,12 @@
 #    include <unistd.h>
 #endif
 
+/* sock address family */
+#define SL_MANAGED_AF_IPV4 12340
+#define SL_MANAGED_AF_IPV6 12341
+#define SL_SOCK_AF_IPV4 AF_INET
+#define SL_SOCK_AF_IPV6 AF_INET6
+
 typedef struct sockaddr_in sockaddr4;
 typedef struct sockaddr_in6 sockaddr6;
 
@@ -45,11 +51,54 @@ typedef union sl_endpoint_u {
     sockaddr6 addr6;
 } sl_endpoint_t;
 
-SL_INLINE_DECL uint16_t sl_endpoint_af_get(sl_endpoint_t *endpoint);
-SL_INLINE_DECL int sl_endpoint_af_set(sl_endpoint_t *endpoint, uint16_t af);
-SL_INLINE_DECL struct sockaddr *sl_endpoint_addr_get(sl_endpoint_t *endpoint);
-SL_INLINE_DECL bool sl_endpoint_is_ipv4(sl_endpoint_t *endpoint);
-SL_INLINE_DECL bool sl_endpoint_is_ipv6(sl_endpoint_t *endpoint);
-SL_INLINE_DECL int sl_endpoint_size(sl_endpoint_t *endpoint);
+SL_INLINE_IMPL uint16_t sl_endpoint_af_get(sl_endpoint_t *endpoint)
+{
+    SL_ASSERT(endpoint);
+    return endpoint->addr4.sin_family;
+}
+
+SL_INLINE_IMPL int sl_endpoint_af_set(sl_endpoint_t *endpoint, uint16_t af)
+{
+    SL_ASSERT(endpoint);
+    switch (af) {
+    case SL_MANAGED_AF_IPV4:
+        endpoint->addr4.sin_family = SL_SOCK_AF_IPV4;
+        return SL_OK;
+    case SL_MANAGED_AF_IPV6:
+        endpoint->addr4.sin_family = SL_SOCK_AF_IPV6;
+        return SL_OK;
+    case SL_SOCK_AF_IPV4:
+    case SL_SOCK_AF_IPV6:
+        endpoint->addr4.sin_family = af;
+        return SL_OK;
+    }
+    return SL_ERR;
+}
+
+SL_INLINE_DECL struct sockaddr *sl_endpoint_addr_get(sl_endpoint_t *endpoint)
+{
+    SL_ASSERT(endpoint);
+    return (struct sockaddr *)endpoint;
+}
+
+SL_INLINE_IMPL bool sl_endpoint_is_ipv4(sl_endpoint_t *endpoint)
+{
+    SL_ASSERT(endpoint);
+    return (sl_endpoint_af_get(endpoint) == SL_SOCK_AF_IPV4);
+}
+
+SL_INLINE_IMPL bool sl_endpoint_is_ipv6(sl_endpoint_t *endpoint)
+{
+    SL_ASSERT(endpoint);
+    return (sl_endpoint_af_get(endpoint) == SL_SOCK_AF_IPV6);
+}
+
+SL_INLINE_IMPL int sl_endpoint_size(sl_endpoint_t *endpoint)
+{
+    SL_ASSERT(endpoint);
+    if (sl_endpoint_is_ipv4(endpoint)) return sizeof(sockaddr4);
+    if (sl_endpoint_is_ipv6(endpoint)) return sizeof(sockaddr6);
+    return SL_ERR;
+}
 
 #endif
