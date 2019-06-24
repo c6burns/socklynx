@@ -77,7 +77,7 @@ SL_INLINE_IMPL int sl_sock_type_set(sl_sock_t *sock, uint32_t type)
 	switch (type) {
 	case SL_SOCK_TYPE_DGRAM:
 	case SL_SOCK_TYPE_STREAM:
-		sock->type = type;
+        sock->type = type;
 		return SL_OK;
 	}
 	return SL_ERR;
@@ -110,7 +110,6 @@ SL_INLINE_IMPL int sl_sock_create(sl_sock_t *sock, uint32_t af, uint32_t type, u
 	SL_ASSERT(sock);
 	SL_GUARD(sock->state != SL_SOCK_STATE_NEW);
 	
-	SL_GUARD(sl_endpoint_af_set(&sock->endpoint, af));
 	SL_GUARD(sl_sock_type_set(sock, type));
 	SL_GUARD(sl_sock_proto_set(sock, proto));
 	SL_GUARD(sl_sock_fd_set(sock, socket(af, type, proto)));
@@ -223,7 +222,8 @@ SL_INLINE_IMPL int sl_sock_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
 	int64_t bytes_recv;
 	int32_t epsize = sizeof(*endpoint);
 #if SL_SOCK_API_WINSOCK
-	if (WSARecvFrom(sock->fd, (LPWSABUF)buf, (DWORD)bufcount, (LPDWORD)&bytes_recv, 0, sl_endpoint_addr_get(endpoint), &epsize, NULL, NULL)) {
+    DWORD flags = 0;
+	if (WSARecvFrom(sock->fd, (LPWSABUF)buf, (DWORD)bufcount, (LPDWORD)&bytes_recv, (LPDWORD)&flags, sl_endpoint_addr_get(endpoint), &epsize, NULL, NULL)) {
 #else
 	struct msghdr mhdr = { 0 };
 	mhdr.msg_name = endpoint;
