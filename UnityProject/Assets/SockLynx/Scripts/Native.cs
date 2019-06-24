@@ -25,6 +25,9 @@ using System.Security;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
+#if UNITY_EDITOR
+[assembly: InternalsVisibleTo("SockLynxTests")]
+#endif
 namespace SL
 {
     [SuppressUnmanagedCodeSecurity]

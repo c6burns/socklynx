@@ -52,7 +52,8 @@ public unsafe class SLManagedUnit
     }
 
     [Test]
-    public void SL_Setup()
+    public void UDP_Setup()
     {
+        UDP.Setup();
     }
 }

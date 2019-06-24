@@ -1,6 +1,44 @@
-.vs/
-.vscode/
-
+# CMake builds
 build*/
+
+# dotnet builds
 **/obj/*
 **/bin/*
+
+# vs and vscode dirs
+**.vs/
+**.vscode/
+
+# autogen unity artifacts
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+
+# symbol meta files
+*.pidb.meta
+*.pdb.meta
+
+# unity crash report file
+sysinfo.txt
+
+# unity packaged builds
+*.apk
+*.unitypackage
+
+# unity unneeded project folders
+UnityProject/[Ll]ibrary/
+UnityProject/[Tt]emp/
+UnityProject/[Oo]bj/
+UnityProject/[Bb]uild*
+UnityProject/Assets/AssetStoreTools*

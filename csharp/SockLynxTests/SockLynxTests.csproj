@@ -14,8 +14,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<ProjectReference Include="../SockLynx/SockLynx.csproj" />-->
-    <Compile Include="../SockLynx/*.cs" />
+    <Compile Include="../../UnityProject/Assets/SockLynx/Scripts/*.cs" />
+    <Compile Include="../../UnityProject/Assets/SockLynx/Tests/Editor/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="../../UnityProject/Assets/SockLynx/Plugins/x86_64/socklynx.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

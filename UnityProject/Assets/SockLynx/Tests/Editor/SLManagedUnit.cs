@@ -80,7 +80,7 @@ public unsafe class SLNativeUnit
         byte[] src = new byte[16];
         rand.NextBytes(src);
         for (int i = 0; i < src.Length; i++)
-            src[i] = Math.Min(src[i], (byte)1);
+            src[i] = Math.Max(src[i], (byte)1);
 
         fixed (byte* psrc = src)
         fixed (byte* pdst = dst)
@@ -108,7 +108,7 @@ public unsafe class SLNativeUnit
         byte[] src = new byte[16];
         rand.NextBytes(src);
         for (int i = 0; i < src.Length; i++)
-            src[i] = Math.Min(src[i], (byte)1);
+            src[i] = Math.Max(src[i], (byte)1);
 
         fixed (byte* psrc = src)
         fixed (byte* pdst = dst)
