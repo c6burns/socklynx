@@ -4,11 +4,11 @@ A thin wrapper for calling cross platform IO APIs from managed code. This projec
 
 ## Getting Started
 
-This library is currently under development. It is not yet a finished product. Please do not try to use it ... yet.
+This library is currently under development, in alpha phase. It works, but it's not feature frozen, and while the API is mainly solidified some small changes are yet to come.
 
 socklynx is not licensed middleware for any gaming consoles, but is easily portable to PS4, Xbox One, and Switch. Please keep in mind that console platforms may require you to modify the library by adding a small amount of platform-specific code from their respective development kits. You will also have to generate a project using tools provided to registered developers of those platforms.
 
-For Windows, Linux, OSX, iOS, and Android a CMake build system is provided. Your platform should be auto-detected, but please open an issue if you encounter build errors.
+For Windows, Linux, OSX, and iOS a CMake build system is provided. Currently evaluating the most optimal solution for Android. Your platform should be auto-detected, but please open an issue if you encounter build errors.
 
 ### Prerequisites
 
