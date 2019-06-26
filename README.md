@@ -1,6 +1,6 @@
 # socklynx
 
-A thin wrapper for calling cross platform IO APIs from managed code. This project was made specifically with games in mind, and is part of a technology suite provided by [Kitty.City Studios](https://kitty.city)
+A thin wrapper for calling cross platform IO APIs from managed code. This project was made specifically with games / console platforms in mind, and is part of a technology suite provided by [Kitty.City Studios](https://kitty.city)
 
 ## Getting Started
 
