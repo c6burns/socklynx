@@ -83,12 +83,44 @@ SL_INLINE_IMPL int sl_sock_fd_set(sl_sock_t *sock, int64_t sockfd)
     SL_ASSERT(sock);
 #if SL_SOCK_API_WINSOCK
     if (sockfd == INVALID_SOCKET) {
+        sl_sock_error_set(sock, sl_sys_errno());
+        switch (sock->error) {
+        case WSANOTINITIALISED:
+            break;
+        case WSAENETDOWN:
+            break;
+        case WSAEAFNOSUPPORT:
+            break;
+        case WSAEINPROGRESS:
+            break;
+        case WSAEMFILE:
+            break;
+        case WSAEINVAL:
+            break;
+        case WSAEINVALIDPROVIDER:
+            break;
+        case WSAEINVALIDPROCTABLE:
+            break;
+        case WSAENOBUFS:
+            break;
+        case WSAEPROTONOSUPPORT:
+            break;
+        case WSAEPROTOTYPE:
+            break;
+        case WSAEPROVIDERFAILEDINIT:
+            break;
+        case WSAESOCKTNOSUPPORT:
+            break;
+
+        }
+        return SL_ERR;
+    }
 #else
     if (sockfd < 0) {
-#endif
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
     }
+#endif
     sock->fd = sockfd;
     return SL_OK;
 }
@@ -145,15 +177,15 @@ SL_INLINE_IMPL int sl_sock_proto_set(sl_sock_t *sock, uint32_t proto)
     return SL_ERR;
 }
 
-SL_INLINE_IMPL int sl_sock_create(sl_sock_t *sock, uint32_t af, uint32_t type, uint32_t proto)
+SL_INLINE_IMPL int sl_sock_create(sl_sock_t *sock, uint32_t type, uint32_t proto)
 {
     SL_ASSERT(sock);
     SL_GUARD(sock->state != SL_SOCK_STATE_NEW);
 
-    SL_GUARD(sl_endpoint_af_set(&sock->endpoint, af));
+    SL_GUARD(sl_endpoint_af_check(&sock->endpoint));
     SL_GUARD(sl_sock_type_set(sock, type));
     SL_GUARD(sl_sock_proto_set(sock, proto));
-    SL_GUARD(sl_sock_fd_set(sock, socket(af, type, proto)));
+    SL_GUARD(sl_sock_fd_set(sock, socket(sl_endpoint_af_get(&sock->endpoint), type, proto)));
     if (sl_endpoint_is_ipv6(&sock->endpoint)) {
         int optval = 0;
         SL_GUARD(setsockopt(sock->fd, IPPROTO_IPV6, IPV6_V6ONLY, (const char *)&optval, sizeof(optval)));
@@ -234,8 +266,11 @@ SL_INLINE_IMPL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
     SL_GUARD(sock->state != SL_SOCK_STATE_BOUND);
 
     int64_t bytes_sent;
+    const struct sockaddr *sa = sl_endpoint_addr_get(endpoint);
+    const int sa_len = sl_endpoint_size(endpoint);
 #if SL_SOCK_API_WINSOCK
-    if (WSASendTo((SOCKET)sock->fd, (LPWSABUF)buf, (DWORD)bufcount, (LPDWORD)&bytes_sent, 0, sl_endpoint_addr_get(endpoint), sl_endpoint_size(endpoint), NULL, NULL)) {
+    if (WSASendTo((SOCKET)sock->fd, (LPWSABUF)buf, (DWORD)bufcount, (LPDWORD)&bytes_sent, 0, sa, sa_len, NULL, NULL))
+    {
 #else
     struct msghdr mhdr = {0};
     mhdr.msg_name = endpoint;
@@ -248,7 +283,7 @@ SL_INLINE_IMPL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
         return SL_ERR;
     }
 
-    return SL_OK;
+    return bytes_sent;
 }
 
 SL_INLINE_IMPL int sl_sock_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint)
@@ -275,7 +310,7 @@ SL_INLINE_IMPL int sl_sock_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
         return SL_ERR;
     }
 
-    return SL_OK;
+    return bytes_recv;
 }
 
 #endif

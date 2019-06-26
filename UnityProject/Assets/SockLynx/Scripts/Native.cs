@@ -20,6 +20,10 @@
  * SOFTWARE.
  */
 
+#if UNITY_STANDALONE_WIN || UNITY_SWITCH
+#   define SL_SOCK_API_WINSOCK
+#endif
+
 using System;
 using System.Security;
 using System.Runtime.InteropServices;
@@ -200,7 +204,7 @@ namespace SL
         internal static extern int socklynx_socket_nonblocking(Socket* sock, int enabled);
 
         [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int socklynx_socket_open(Socket* sock, Endpoint* endpoint);
+        internal static extern int socklynx_socket_open(Socket* sock);
 
         [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int socklynx_socket_close(Socket* sock);

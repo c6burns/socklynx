@@ -25,11 +25,13 @@ using SL;
 using System;
 using System.Net;
 
-public unsafe class SLManagedUnit
+public unsafe class SLNativeUnit
 {
-    const ushort LISTEN_PORT = 58343;
+    const ushort LISTEN_PORT = 51343;
+    const int SL_OK = 0;
 
     ushort _port = Util.HtoN(LISTEN_PORT);
+    C.Socket _sock;
 
     [OneTimeSetUp]
     public void FixtureSetup()
@@ -44,16 +46,77 @@ public unsafe class SLManagedUnit
     [SetUp]
     public void TestSetup()
     {
+        _sock = default;
     }
 
     [TearDown]
     public void TestCleanup()
     {
+        if (_sock.fd != 0)
+        {
+            fixed (C.Socket* sockptr = &_sock)
+            {
+                UDP.SocketClose(sockptr);
+            }
+        }
+        UDP.Cleanup();
     }
 
     [Test]
     public void UDP_Setup()
     {
-        UDP.Setup();
+        Assert.True(UDP.Setup());
+    }
+
+    [Test]
+    public void UDP_DoubleSetup()
+    {
+        Assert.True(UDP.Setup());
+        Assert.True(UDP.Setup());
+    }
+
+    [Test]
+    public void UDP_Cleanup()
+    {
+        Assert.True(UDP.Cleanup());
+    }
+
+    [Test]
+    public void UDP_DoubleCleanup()
+    {
+        Assert.True(UDP.Cleanup());
+        Assert.True(UDP.Cleanup());
+    }
+
+    [Test]
+    public void UDP_SetupCleanup()
+    {
+        Assert.True(UDP.Setup());
+        Assert.True(UDP.Cleanup());
+    }
+
+    [Test]
+    public void UDP_SocketOpenClose()
+    {
+        _sock = C.Socket.NewUDP(C.Endpoint.NewV4(_port));
+        fixed (C.Socket* sockptr = &_sock)
+        {
+            Assert.True(UDP.Setup());
+            Assert.True(UDP.SocketOpen(sockptr));
+            Assert.True(UDP.SocketClose(sockptr));
+        }
+    }
+
+    [Test]
+    public void UDP_SocketSetBlocking()
+    {
+        _sock = C.Socket.NewUDP(C.Endpoint.NewV4(_port));
+        fixed (C.Socket* sockptr = &_sock)
+        {
+            Assert.True(UDP.Setup());
+            Assert.True(UDP.SocketOpen(sockptr));
+            Assert.True(UDP.SocketNonBlocking(sockptr, true));
+            Assert.True(UDP.SocketClose(sockptr));
+        }
     }
 }

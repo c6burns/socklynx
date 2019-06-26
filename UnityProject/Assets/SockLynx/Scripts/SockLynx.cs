@@ -42,9 +42,9 @@ namespace SL
         }
 
         [MethodImpl(Inline)]
-        public static bool SocketOpen(C.Socket* sock, C.Endpoint* endpoint)
+        public static bool SocketOpen(C.Socket* sock)
         {
-            return (C.socklynx_socket_open(sock, endpoint) == SL_OK);
+            return (C.socklynx_socket_open(sock) == SL_OK);
         }
 
         [MethodImpl(Inline)]

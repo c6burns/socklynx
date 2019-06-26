@@ -51,6 +51,23 @@ typedef union sl_endpoint_u {
     sockaddr6 addr6;
 } sl_endpoint_t;
 
+SL_INLINE_IMPL int sl_endpoint_af_check(sl_endpoint_t *endpoint)
+{
+    SL_ASSERT(endpoint);
+    switch (endpoint->addr4.sin_family) {
+    case SL_MANAGED_AF_IPV4:
+        endpoint->addr4.sin_family = SL_SOCK_AF_IPV4;
+        return SL_OK;
+    case SL_MANAGED_AF_IPV6:
+        endpoint->addr4.sin_family = SL_SOCK_AF_IPV6;
+        return SL_OK;
+    case SL_SOCK_AF_IPV4:
+    case SL_SOCK_AF_IPV6:
+        return SL_OK;
+    }
+    return SL_ERR;
+}
+
 SL_INLINE_IMPL uint16_t sl_endpoint_af_get(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);
@@ -73,6 +90,12 @@ SL_INLINE_IMPL int sl_endpoint_af_set(sl_endpoint_t *endpoint, uint16_t af)
         return SL_OK;
     }
     return SL_ERR;
+}
+
+SL_INLINE_DECL struct sockaddr *sl_endpoint_addrany_set(sl_endpoint_t *endpoint)
+{
+    SL_ASSERT(endpoint);
+    return (struct sockaddr *)endpoint;
 }
 
 SL_INLINE_DECL struct sockaddr *sl_endpoint_addr_get(sl_endpoint_t *endpoint)

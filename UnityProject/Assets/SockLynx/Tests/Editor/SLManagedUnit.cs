@@ -25,7 +25,7 @@ using SL;
 using System;
 using System.Net;
 
-public unsafe class SLNativeUnit
+public unsafe class SLManagedUnit
 {
     const ushort LISTEN_PORT = 58343;
 
