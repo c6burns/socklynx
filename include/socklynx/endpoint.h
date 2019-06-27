@@ -92,13 +92,13 @@ SL_INLINE_IMPL int sl_endpoint_af_set(sl_endpoint_t *endpoint, uint16_t af)
     return SL_ERR;
 }
 
-SL_INLINE_DECL struct sockaddr *sl_endpoint_addrany_set(sl_endpoint_t *endpoint)
+SL_INLINE_IMPL struct sockaddr *sl_endpoint_addrany_set(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);
     return (struct sockaddr *)endpoint;
 }
 
-SL_INLINE_DECL struct sockaddr *sl_endpoint_addr_get(sl_endpoint_t *endpoint)
+SL_INLINE_IMPL struct sockaddr *sl_endpoint_addr_get(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);
     return (struct sockaddr *)endpoint;

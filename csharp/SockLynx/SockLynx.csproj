@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PluginDir>../../UnityProject/Assets/SockLynx/Plugins/x86_64</PluginDir>
     <OSPlatformWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</OSPlatformWindows>
   </PropertyGroup>
 
@@ -16,7 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="../../UnityProject/Assets/SockLynx/Plugins/x86_64/socklynx.dll">
+    <ModuleNames Condition="Exists('$(PluginDir)/socklynx.dll')" Include="$(PluginDir)/socklynx.dll" />
+    <ModuleNames Condition="Exists('$(PluginDir)/libsocklynx.so')" Include="$(PluginDir)/libsocklynx.so" />
+    <ModuleNames Condition="Exists('$(PluginDir)/socklynx.bundle')" Include="$(PluginDir)/socklynx.bundle" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="@(ModuleNames)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
