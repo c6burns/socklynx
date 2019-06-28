@@ -41,7 +41,7 @@ namespace SL
 
         /*
          * Address Family does NOT match up to the OS, it is converted on the C side
-         * the idea here is to use values that no platform would possibly be using
+         * the idea here that these wont match any impl of AF_INET or AF_INET6
          */
         public enum AF : ushort
         {
