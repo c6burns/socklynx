@@ -72,7 +72,7 @@ public unsafe class SLIntegration
     }
 
     [Test]
-    public void UDP_SocketSendRecv()
+    public void UDP_SocketSendRecv_Blocking()
     {
         Random rand = new Random();
 
@@ -107,9 +107,7 @@ public unsafe class SLIntegration
         fixed (C.Socket* sockptr_client = &_sock_client)
         {
             Assert.True(UDP.SocketOpen(sockptr_server));
-
             Assert.True(UDP.SocketOpen(sockptr_client));
-            Assert.True(UDP.SocketNonBlocking(sockptr_client, true));
 
             Assert.AreEqual(UDP.SocketSend(sockptr_client, &buf_client_send, 1, &ep_server), pl_client.Length);
             Assert.AreEqual(UDP.SocketRecv(sockptr_server, &buf_server_recv, 1, &ep_server_recv), pl_client.Length);
