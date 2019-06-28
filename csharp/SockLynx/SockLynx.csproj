@@ -16,16 +16,22 @@
     <Compile Include="../../UnityProject/Assets/SockLynx/Scripts/*.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ModuleNames Condition="Exists('$(PluginDir)/socklynx.dll')" Include="$(PluginDir)/socklynx.dll" />
-    <ModuleNames Condition="Exists('$(PluginDir)/libsocklynx.so')" Include="$(PluginDir)/libsocklynx.so" />
-    <ModuleNames Condition="Exists('$(PluginDir)/socklynx.bundle')" Include="$(PluginDir)/socklynx.bundle" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="@(ModuleNames)">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+  <Target Name="CopyDSO" BeforeTargets="Build">
+    <Copy
+      Condition="Exists('$(PluginDir)/socklynx.dll')"
+	  SourceFiles="$(PluginDir)/socklynx.dll"
+	  DestinationFiles="$(OutputPath)/socklynx.dll"
+	  />
+	<Copy
+      Condition="Exists('$(PluginDir)/libsocklynx.so')"
+	  SourceFiles="$(PluginDir)/libsocklynx.so"
+	  DestinationFiles="$(OutputPath)/libsocklynx.so"
+	  />
+	<Copy
+      Condition="Exists('$(PluginDir)/socklynx.bundle')"
+	  SourceFiles="$(PluginDir)/socklynx.bundle"
+	  DestinationFiles="$(OutputPath)/socklynx.dylib"
+	  />
+  </Target>
 
 </Project>
