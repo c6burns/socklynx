@@ -43,23 +43,35 @@
 #define SL_SOCK_AF_IPV4 AF_INET
 #define SL_SOCK_AF_IPV6 AF_INET6
 
-typedef struct sockaddr_in sockaddr4;
-typedef struct sockaddr_in6 sockaddr6;
+typedef struct sl_sockaddr4_s {
+	uint16_t af;
+	uint16_t port;
+	uint32_t addr;
+	uint8_t pad[8];
+} sl_sockaddr4_t;
+
+typedef struct sl_sockaddr6_s {
+	uint16_t af;
+	uint16_t port;
+	uint32_t flowinfo;
+	uint8_t addr[16];
+	uint32_t scope_id;
+} sl_sockaddr6_t;
 
 typedef union sl_endpoint_u {
-    sockaddr4 addr4;
-    sockaddr6 addr6;
+    sl_sockaddr4_t addr4;
+    sl_sockaddr6_t addr6;
 } sl_endpoint_t;
 
 SL_INLINE_IMPL int sl_endpoint_af_check(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);
-    switch (endpoint->addr4.sin_family) {
+    switch (endpoint->addr4.af) {
     case SL_MANAGED_AF_IPV4:
-        endpoint->addr4.sin_family = SL_SOCK_AF_IPV4;
+        endpoint->addr4.af = SL_SOCK_AF_IPV4;
         return SL_OK;
     case SL_MANAGED_AF_IPV6:
-        endpoint->addr4.sin_family = SL_SOCK_AF_IPV6;
+        endpoint->addr4.af = SL_SOCK_AF_IPV6;
         return SL_OK;
     case SL_SOCK_AF_IPV4:
     case SL_SOCK_AF_IPV6:
@@ -71,7 +83,8 @@ SL_INLINE_IMPL int sl_endpoint_af_check(sl_endpoint_t *endpoint)
 SL_INLINE_IMPL uint16_t sl_endpoint_af_get(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);
-    return endpoint->addr4.sin_family;
+	/* this should mask out anything weird (eg. apple using the high byte for len) */
+    return (endpoint->addr4.af & 0x0000ffff);
 }
 
 SL_INLINE_IMPL int sl_endpoint_af_set(sl_endpoint_t *endpoint, uint16_t af)
@@ -79,14 +92,14 @@ SL_INLINE_IMPL int sl_endpoint_af_set(sl_endpoint_t *endpoint, uint16_t af)
     SL_ASSERT(endpoint);
     switch (af) {
     case SL_MANAGED_AF_IPV4:
-        endpoint->addr4.sin_family = SL_SOCK_AF_IPV4;
+        endpoint->addr4.af = SL_SOCK_AF_IPV4;
         return SL_OK;
     case SL_MANAGED_AF_IPV6:
-        endpoint->addr4.sin_family = SL_SOCK_AF_IPV6;
+        endpoint->addr4.af = SL_SOCK_AF_IPV6;
         return SL_OK;
     case SL_SOCK_AF_IPV4:
     case SL_SOCK_AF_IPV6:
-        endpoint->addr4.sin_family = af;
+        endpoint->addr4.af = af;
         return SL_OK;
     }
     return SL_ERR;
@@ -119,8 +132,8 @@ SL_INLINE_IMPL bool sl_endpoint_is_ipv6(sl_endpoint_t *endpoint)
 SL_INLINE_IMPL int sl_endpoint_size(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);
-    if (sl_endpoint_is_ipv4(endpoint)) return sizeof(sockaddr4);
-    if (sl_endpoint_is_ipv6(endpoint)) return sizeof(sockaddr6);
+    if (sl_endpoint_is_ipv4(endpoint)) return sizeof(sl_sockaddr4_t);
+    if (sl_endpoint_is_ipv6(endpoint)) return sizeof(sl_sockaddr6_t);
     return SL_ERR;
 }
 
