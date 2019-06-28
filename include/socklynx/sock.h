@@ -266,15 +266,15 @@ SL_INLINE_IMPL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
     SL_GUARD(sock->state != SL_SOCK_STATE_BOUND);
 
     int64_t bytes_sent;
-    const struct sockaddr *sa = sl_endpoint_addr_get(endpoint);
+    struct sockaddr *sa = sl_endpoint_addr_get(endpoint);
     const int sa_len = sl_endpoint_size(endpoint);
 #if SL_SOCK_API_WINSOCK
     if (WSASendTo((SOCKET)sock->fd, (LPWSABUF)buf, (DWORD)bufcount, (LPDWORD)&bytes_sent, 0, sa, sa_len, NULL, NULL))
     {
 #else
     struct msghdr mhdr = {0};
-    mhdr.msg_name = endpoint;
-    mhdr.msg_namelen = (socklen_t)sizeof(*endpoint);
+    mhdr.msg_name = sa;
+    mhdr.msg_namelen = sa_len;
     mhdr.msg_iov = (struct iovec *)buf;
     mhdr.msg_iovlen = (size_t)bufcount;
     if ((bytes_sent = (ssize_t)sendmsg(sock->fd, &mhdr, 0)) < 0) {
