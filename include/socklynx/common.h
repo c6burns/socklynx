@@ -135,9 +135,9 @@ typedef signed char int8_t;
 typedef short int int16_t;
 typedef int int32_t;
 #    if SL_64
-typedef long long int int64_t;
-#    else
 typedef long int int64_t;
+#    else
+typedef long long int int64_t;
 #    endif
 
 typedef unsigned char uint8_t;
@@ -146,23 +146,21 @@ typedef unsigned short int uint16_t;
 typedef unsigned int uint32_t;
 
 #    if SL_64
-typedef unsigned long long int uint64_t;
-#    else
 typedef unsigned long int uint64_t;
+#    else
+typedef unsigned long long int uint64_t;
 #    endif
 
-#    if SL_64
-typedef long long int intptr_t;
-typedef unsigned long long int uintptr_t;
-#    else
 typedef long int intptr_t;
 typedef unsigned long int uintptr_t;
-#    endif
 
-#    if SL_64
+typedef long int ssize_t;
+typedef unsigned long int size_t;
+
+#    if SL_64 && !defined(__INT64_C)
 #        define __INT64_C(c) c##L
 #        define __UINT64_C(c) c##UL
-#    else
+#    elif !defined(__INT64_C)
 #        define __INT64_C(c) c##LL
 #        define __UINT64_C(c) c##ULL
 #    endif
@@ -201,6 +199,8 @@ SL_STATIC_ASSERT(sizeof(int16_t) == 2);
 SL_STATIC_ASSERT(sizeof(int8_t) == 1);
 SL_STATIC_ASSERT(sizeof(uintptr_t) == sizeof(void *));
 SL_STATIC_ASSERT(sizeof(intptr_t) == sizeof(void *));
+SL_STATIC_ASSERT(sizeof(size_t) == sizeof(void *));
+SL_STATIC_ASSERT(sizeof(ssize_t) == sizeof(void *));
 SL_STATIC_ASSERT(sizeof(char) == 1);
 
 #endif

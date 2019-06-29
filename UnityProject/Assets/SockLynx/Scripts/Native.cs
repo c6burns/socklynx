@@ -56,7 +56,7 @@ namespace SL
             public byte* buf;
 #else
             public byte* buf;
-            public UIntPtr len;
+            public void* len;
 #endif
             [MethodImpl(Sys.SL_INLINE)]
             public static Buffer New(byte* buf, uint len)
@@ -66,7 +66,7 @@ namespace SL
 #if SL_SOCK_API_WINSOCK
                 buffer.len = len;
 #else
-                buffer.len = (UIntPtr)len;
+                buffer.len = (void*)len;
 #endif
                 return buffer;
             }
