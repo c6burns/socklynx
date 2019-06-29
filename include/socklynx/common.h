@@ -154,7 +154,6 @@ typedef unsigned long long int uint64_t;
 typedef long int intptr_t;
 typedef unsigned long int uintptr_t;
 
-typedef long int ssize_t;
 typedef unsigned long int size_t;
 
 #    if SL_64 && !defined(__INT64_C)
@@ -200,7 +199,6 @@ SL_STATIC_ASSERT(sizeof(int8_t) == 1);
 SL_STATIC_ASSERT(sizeof(uintptr_t) == sizeof(void *));
 SL_STATIC_ASSERT(sizeof(intptr_t) == sizeof(void *));
 SL_STATIC_ASSERT(sizeof(size_t) == sizeof(void *));
-SL_STATIC_ASSERT(sizeof(ssize_t) == sizeof(void *));
 SL_STATIC_ASSERT(sizeof(char) == 1);
 
 #endif
