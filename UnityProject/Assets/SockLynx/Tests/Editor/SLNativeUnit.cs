@@ -28,7 +28,6 @@ using System.Net;
 public unsafe class SLNativeUnit
 {
     const ushort LISTEN_PORT = 51343;
-    const int SL_OK = 0;
 
     ushort _port = Util.HtoN(LISTEN_PORT);
     C.Socket _sock;
@@ -59,40 +58,40 @@ public unsafe class SLNativeUnit
                 UDP.SocketClose(sockptr);
             }
         }
-        UDP.Cleanup();
+        Sys.Cleanup();
     }
 
     [Test]
     public void UDP_Setup()
     {
-        Assert.True(UDP.Setup());
+        Assert.True(Sys.Setup());
     }
 
     [Test]
     public void UDP_DoubleSetup()
     {
-        Assert.True(UDP.Setup());
-        Assert.True(UDP.Setup());
+        Assert.True(Sys.Setup());
+        Assert.True(Sys.Setup());
     }
 
     [Test]
     public void UDP_Cleanup()
     {
-        Assert.True(UDP.Cleanup());
+        Assert.True(Sys.Cleanup());
     }
 
     [Test]
     public void UDP_DoubleCleanup()
     {
-        Assert.True(UDP.Cleanup());
-        Assert.True(UDP.Cleanup());
+        Assert.True(Sys.Cleanup());
+        Assert.True(Sys.Cleanup());
     }
 
     [Test]
     public void UDP_SetupCleanup()
     {
-        Assert.True(UDP.Setup());
-        Assert.True(UDP.Cleanup());
+        Assert.True(Sys.Setup());
+        Assert.True(Sys.Cleanup());
     }
 
     [Test]
@@ -101,7 +100,7 @@ public unsafe class SLNativeUnit
         _sock = C.Socket.NewUDP(C.Endpoint.NewV4(_port));
         fixed (C.Socket* sockptr = &_sock)
         {
-            Assert.True(UDP.Setup());
+            Assert.True(Sys.Setup());
             Assert.True(UDP.SocketOpen(sockptr));
             Assert.True(UDP.SocketClose(sockptr));
         }
@@ -113,7 +112,7 @@ public unsafe class SLNativeUnit
         _sock = C.Socket.NewUDP(C.Endpoint.NewV4(_port));
         fixed (C.Socket* sockptr = &_sock)
         {
-            Assert.True(UDP.Setup());
+            Assert.True(Sys.Setup());
             Assert.True(UDP.SocketOpen(sockptr));
             Assert.True(UDP.SocketNonBlocking(sockptr, true));
             Assert.True(UDP.SocketClose(sockptr));

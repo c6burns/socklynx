@@ -24,7 +24,6 @@
 #   define SL_SOCK_API_WINSOCK
 #endif
 
-using System;
 using System.Security;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
@@ -37,7 +36,7 @@ namespace SL
     [SuppressUnmanagedCodeSecurity]
     public static unsafe class C
     {
-        const MethodImplOptions Inline = MethodImplOptions.AggressiveInlining;
+        public const int SL_OK = 0;
 
         /*
          * Address Family does NOT match up to the OS, it is converted on the C side
@@ -59,7 +58,7 @@ namespace SL
             public byte* buf;
             public UIntPtr len;
 #endif
-            [MethodImpl(Inline)]
+            [MethodImpl(Sys.SL_INLINE)]
             public static Buffer New(byte* buf, uint len)
             {
                 Buffer buffer = default;
@@ -71,9 +70,7 @@ namespace SL
 #endif
                 return buffer;
             }
-            [MethodImpl(Inline)] public static Buffer New(byte* buf, int len) => New(buf, (uint)len);
-            [MethodImpl(Inline)] public static Buffer New(byte* buf, IntPtr len) => New(buf, (uint)len);
-            [MethodImpl(Inline)] public static Buffer New(byte* buf, UIntPtr len) => New(buf, (uint)len);
+            [MethodImpl(Sys.SL_INLINE)] public static Buffer New(byte* buf, int len) => New(buf, (uint)len);
         }
 
         [StructLayout(LayoutKind.Explicit)]
@@ -82,7 +79,7 @@ namespace SL
             [FieldOffset(0)] public uint int_addr;
             [FieldOffset(0)] public fixed byte byte_addr[4];
 
-            [MethodImpl(Inline)]
+            [MethodImpl(Sys.SL_INLINE)]
             public static IPv4 New(byte b0, byte b1, byte b2, byte b3)
             {
                 IPv4 ip = default;
@@ -100,7 +97,7 @@ namespace SL
             [FieldOffset(0)] public fixed byte byte_addr[16];
             [FieldOffset(0)] public fixed ushort short_addr[8];
 
-            [MethodImpl(Inline)]
+            [MethodImpl(Sys.SL_INLINE)]
             public static IPv6 New(ushort s0, ushort s1, ushort s2, ushort s3, ushort s4, ushort s5, ushort s6, ushort s7)
             {
                 IPv6 ip = default;
@@ -114,7 +111,7 @@ namespace SL
                 ip.short_addr[7] = Util.HtoN(s7);
                 return ip;
             }
-            [MethodImpl(Inline)]
+            [MethodImpl(Sys.SL_INLINE)]
             public static IPv6 New(int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7)
             {
                 return New((ushort)s0, (ushort)s1, (ushort)s2, (ushort)s3, (ushort)s4, (ushort)s5, (ushort)s6, (ushort)s7);
@@ -136,7 +133,7 @@ namespace SL
             [FieldOffset(8)] public IPv6 addr6;
             [FieldOffset(24)] public uint scope_id;
 
-            [MethodImpl(Inline)]
+            [MethodImpl(Sys.SL_INLINE)]
             public static Endpoint NewV4(ushort port = 0, IPv4 addr4 = default)
             {
                 Endpoint endpoint = default;
@@ -145,13 +142,13 @@ namespace SL
                 endpoint.addr4 = addr4;
                 return endpoint;
             }
-            [MethodImpl(Inline)]
+            [MethodImpl(Sys.SL_INLINE)]
             public static Endpoint NewV4(int port = 0, IPv4 addr4 = default)
             {
                 return NewV4((ushort)port, addr4);
             }
 
-            [MethodImpl(Inline)]
+            [MethodImpl(Sys.SL_INLINE)]
             public static Endpoint NewV6(ushort port = 0, IPv6 addr6 = default, uint flowinfo = 0, uint scope_id = 0)
             {
                 Endpoint endpoint = default;
@@ -162,7 +159,7 @@ namespace SL
                 endpoint.addr6 = addr6;
                 return endpoint;
             }
-            [MethodImpl(Inline)]
+            [MethodImpl(Sys.SL_INLINE)]
             public static Endpoint NewV6(int port = 0, IPv6 addr6 = default, uint flowinfo = 0, uint scope_id = 0)
             {
                 return NewV6((ushort)port, addr6, flowinfo, scope_id);
@@ -176,7 +173,7 @@ namespace SL
              * internal members are handled on native side, for good reason
              * eg. sock type and proto are defined differently on diff platforms
              */
-            internal Int64 fd;
+            internal long fd;
             internal uint dir;
             internal uint state;
             internal uint type;
@@ -184,7 +181,7 @@ namespace SL
             public uint error;
             public Endpoint endpoint;
 
-            [MethodImpl(Inline)]
+            [MethodImpl(Sys.SL_INLINE)]
             public static Socket NewUDP(Endpoint endpoint = default)
             {
                 Socket sock = default;

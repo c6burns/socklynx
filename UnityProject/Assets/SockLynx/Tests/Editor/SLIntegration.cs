@@ -28,7 +28,6 @@ using System.Net;
 public unsafe class SLIntegration
 {
     const ushort LISTEN_PORT = 51343;
-    const int SL_OK = 0;
 
     ushort _port = Util.HtoN(LISTEN_PORT);
     C.Socket _sock_server;
@@ -68,7 +67,7 @@ public unsafe class SLIntegration
                 UDP.SocketClose(sockptr);
             }
         }
-        UDP.Cleanup();
+        Sys.Cleanup();
     }
 
     [Test]
@@ -101,7 +100,7 @@ public unsafe class SLIntegration
         fixed (byte* bufptr = pl_client) buf_client_send = C.Buffer.New(bufptr, pl_client.Length);
         fixed (byte* bufptr = mem_client) buf_client_recv = C.Buffer.New(bufptr, mem_client.Length);
 
-        Assert.True(UDP.Setup());
+        Assert.True(Sys.Setup());
 
         fixed (C.Socket* sockptr_server = &_sock_server)
         fixed (C.Socket* sockptr_client = &_sock_client)

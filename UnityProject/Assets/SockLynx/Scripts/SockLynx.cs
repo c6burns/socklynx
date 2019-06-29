@@ -24,48 +24,52 @@ using System.Runtime.CompilerServices;
 
 namespace SL
 {
-    public static unsafe class UDP
+    public static class Sys
     {
-        const int SL_OK = 0;
-        const MethodImplOptions Inline = MethodImplOptions.AggressiveInlining;
+        public const MethodImplOptions SL_INLINE = MethodImplOptions.AggressiveInlining;
 
-        [MethodImpl(Inline)]
+        [MethodImpl(Sys.SL_INLINE)]
         public static bool Setup()
         {
-            return (C.socklynx_setup() == SL_OK);
+            return (C.socklynx_setup() == C.SL_OK);
         }
 
-        [MethodImpl(Inline)]
+        [MethodImpl(Sys.SL_INLINE)]
         public static bool Cleanup()
         {
-            return (C.socklynx_cleanup() == SL_OK);
+            return (C.socklynx_cleanup() == C.SL_OK);
         }
+    }
 
-        [MethodImpl(Inline)]
+    public static unsafe class UDP
+    {
+        
+
+        [MethodImpl(Sys.SL_INLINE)]
         public static bool SocketOpen(C.Socket* sock)
         {
-            return (C.socklynx_socket_open(sock) == SL_OK);
+            return (C.socklynx_socket_open(sock) == C.SL_OK);
         }
 
-        [MethodImpl(Inline)]
+        [MethodImpl(Sys.SL_INLINE)]
         public static bool SocketClose(C.Socket* sock)
         {
-            return (C.socklynx_socket_close(sock) == SL_OK);
+            return (C.socklynx_socket_close(sock) == C.SL_OK);
         }
 
-        [MethodImpl(Inline)]
+        [MethodImpl(Sys.SL_INLINE)]
         public static bool SocketNonBlocking(C.Socket* sock, bool enabled)
         {
-            return (C.socklynx_socket_nonblocking(sock, enabled ? 1 : 0) == SL_OK);
+            return (C.socklynx_socket_nonblocking(sock, enabled ? 1 : 0) == C.SL_OK);
         }
 
-        [MethodImpl(Inline)]
+        [MethodImpl(Sys.SL_INLINE)]
         public static int SocketSend(C.Socket* sock, C.Buffer* bufferArray, int bufferCount, C.Endpoint* endpoint)
         {
             return C.socklynx_socket_send(sock, bufferArray, bufferCount, endpoint);
         }
 
-        [MethodImpl(Inline)]
+        [MethodImpl(Sys.SL_INLINE)]
         public static int SocketRecv(C.Socket* sock, C.Buffer* bufferArray, int bufferCount, C.Endpoint* endpoint)
         {
             return C.socklynx_socket_recv(sock, bufferArray, bufferCount, endpoint);

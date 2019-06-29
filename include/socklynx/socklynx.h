@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef SL_H
-#define SL_H
+#ifndef SL_SOCKLYNX_H
+#define SL_SOCKLYNX_H
 
 #include "socklynx/buf.h"
 #include "socklynx/common.h"

@@ -283,7 +283,7 @@ SL_INLINE_IMPL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
         return SL_ERR;
     }
 
-    return bytes_sent;
+    return (int)bytes_sent;
 }
 
 SL_INLINE_IMPL int sl_sock_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount, sl_endpoint_t *endpoint)
@@ -310,7 +310,7 @@ SL_INLINE_IMPL int sl_sock_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
         return SL_ERR;
     }
 
-    return bytes_recv;
+    return (int)bytes_recv;
 }
 
 #endif
