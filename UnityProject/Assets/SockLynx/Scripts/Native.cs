@@ -111,6 +111,7 @@ namespace SL
                 ip.short_addr[7] = Util.HtoN(s7);
                 return ip;
             }
+
             [MethodImpl(Sys.SL_INLINE)]
             public static IPv6 New(int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7)
             {
@@ -142,6 +143,7 @@ namespace SL
                 endpoint.addr4 = addr4;
                 return endpoint;
             }
+
             [MethodImpl(Sys.SL_INLINE)]
             public static Endpoint NewV4(int port = 0, IPv4 addr4 = default)
             {
@@ -159,6 +161,7 @@ namespace SL
                 endpoint.addr6 = addr6;
                 return endpoint;
             }
+
             [MethodImpl(Sys.SL_INLINE)]
             public static Endpoint NewV6(int port = 0, IPv6 addr6 = default, uint flowinfo = 0, uint scope_id = 0)
             {
