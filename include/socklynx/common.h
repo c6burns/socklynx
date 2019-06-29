@@ -87,6 +87,7 @@
 #    define SL_SOCK_API_PS4 1
 #endif
 
+/* determine C compiler */
 #if !defined(SL_FORCE_C_NONE) && defined(_MSC_VER)
 #    define SL_C_MSC 1
 #elif !defined(SL_FORCE_C_NONE) && defined(__GNUC__)
@@ -100,6 +101,9 @@
 #define SL_INLINE_IMPL static inline
 
 #if SL_C_MSC
+#    if defined(SL_C_MISSING_STDBOOL) || defined(SL_C_MISSING_STDINT)
+#        error "Please file an issue if you are truly missing stdint or stdbool in any MSFT environment: https://github.com/c6burns/socklynx/issues"
+#    endif
 #    define SL_CALL __cdecl
 #    ifdef SL_EXPORTS
 #        define SL_API __declspec(dllexport)
@@ -111,6 +115,7 @@
 #    define SL_API
 #endif
 
+/* 32 or 64 bit compile */
 #if !defined(SL_FORCE_32) && (defined(SL_FORCE_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(__aarch64__) || defined(__ia64__) || defined(__powerpc64__))
 #    define SL_64 1
 #else
