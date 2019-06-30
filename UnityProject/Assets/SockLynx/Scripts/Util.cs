@@ -58,7 +58,7 @@ namespace SL
         [MethodImpl(Sys.SL_INLINE)] public static long NtoH(long input) => (long)HtoN((ulong)input);
         #endregion
 
-        #region Unsafe MemCpy / MemCmp
+        #region Unsafe MemCpy / MemSet / MemCmp
         [MethodImpl(Sys.SL_INLINE)]
         private static unsafe void Copy1(byte* pdst, byte* psrc)
         {
@@ -150,6 +150,70 @@ namespace SL
                     Copy7(pdst + longWriteLimit, psrc + longWriteLimit);
                     break;
             }
+        }
+
+        [MethodImpl(Sys.SL_INLINE)]
+        public static unsafe void MemSet(byte* dst, int dstOffset, ulong ulongValue, int byteLength)
+        {
+            byte *pdst = dst + dstOffset;
+            ulong longByteLength = (ulong)byteLength;
+            ulong longWriteLimit = longByteLength & ~7ul;
+
+            /* write as much as possible with 64 bit width */
+            for (ulong cursor = 0; cursor < longWriteLimit; cursor += sizeof(long))
+            {
+                Copy8(pdst + cursor, (byte*)&ulongValue);
+            }
+
+            /* write the remaining < 8 bytes as efficiently as possible */
+            switch (longByteLength & 7ul)
+            {
+                case 1:
+                    Copy1(pdst + longWriteLimit, (byte*)&ulongValue);
+                    break;
+                case 2:
+                    Copy2(pdst + longWriteLimit, (byte*)&ulongValue);
+                    break;
+                case 3:
+                    Copy3(pdst + longWriteLimit, (byte*)&ulongValue);
+                    break;
+                case 4:
+                    Copy4(pdst + longWriteLimit, (byte*)&ulongValue);
+                    break;
+                case 5:
+                    Copy5(pdst + longWriteLimit, (byte*)&ulongValue);
+                    break;
+                case 6:
+                    Copy6(pdst + longWriteLimit, (byte*)&ulongValue);
+                    break;
+                case 7:
+                    Copy7(pdst + longWriteLimit, (byte*)&ulongValue);
+                    break;
+            }
+        }
+
+        [MethodImpl(Sys.SL_INLINE)]
+        public static unsafe void MemSet(byte* dst, int dstOffset, byte byteValue, int byteLength)
+        {
+            ulong ulval = (ulong)byteValue;
+            ulong ulongValue = ulval | (ulval << 8) | (ulval << 16) | (ulval << 24) | (ulval << 32) | (ulval << 40) | (ulval << 48) | (ulval << 56);
+            MemSet(dst, dstOffset, ulongValue, byteLength);
+        }
+
+        [MethodImpl(Sys.SL_INLINE)]
+        public static unsafe void MemSet(byte* dst, int dstOffset, short shortValue, int byteLength)
+        {
+            ulong ulval = (ulong)shortValue;
+            ulong ulongValue = ulval | (ulval << 16) | (ulval << 32) | (ulval << 48);
+            MemSet(dst, dstOffset, ulongValue, byteLength);
+        }
+
+        [MethodImpl(Sys.SL_INLINE)]
+        public static unsafe void MemSet(byte* dst, int dstOffset, int intValue, int byteLength)
+        {
+            ulong ulval = (ulong)intValue;
+            ulong ulongValue = ulval | (ulval << 32);
+            MemSet(dst, dstOffset, ulongValue, byteLength);
         }
 
         [MethodImpl(Sys.SL_INLINE)]
