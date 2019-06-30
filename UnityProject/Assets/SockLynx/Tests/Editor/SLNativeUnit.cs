@@ -30,7 +30,6 @@ public unsafe class SLNativeUnit
     const ushort LISTEN_PORT = 51343;
 
     ushort _port = Util.HtoN(LISTEN_PORT);
-    C.Socket _sock;
 
     [OneTimeSetUp]
     public void FixtureSetup()
@@ -45,77 +44,145 @@ public unsafe class SLNativeUnit
     [SetUp]
     public void TestSetup()
     {
-        _sock = default;
     }
 
     [TearDown]
     public void TestCleanup()
     {
-        if (_sock.fd != 0)
-        {
-            fixed (C.Socket* sockptr = &_sock)
-            {
-                UDP.SocketClose(sockptr);
-            }
-        }
-        Sys.Cleanup();
     }
 
     [Test]
     public void UDP_Setup()
     {
-        Assert.True(Sys.Setup());
+        C.Context ctx = default;
+        Assert.True(Sys.Setup(&ctx));
+        Assert.AreEqual(C.ContextState.Started, ctx.state);
+        Assert.AreNotEqual(0, ctx.af_inet);
+        Assert.AreNotEqual(0, ctx.af_inet6);
+
+        Assert.True(Sys.Cleanup(&ctx));
+        Assert.AreEqual(C.ContextState.Stopped, ctx.state);
     }
 
     [Test]
     public void UDP_DoubleSetup()
     {
-        Assert.True(Sys.Setup());
-        Assert.True(Sys.Setup());
+        C.Context ctx = default;
+        Assert.True(Sys.Setup(&ctx));
+        Assert.AreEqual(C.ContextState.Started, ctx.state);
+        Assert.AreNotEqual(0, ctx.af_inet);
+        Assert.AreNotEqual(0, ctx.af_inet6);
+
+        Assert.True(Sys.Setup(&ctx));
+        Assert.AreEqual(C.ContextState.Started, ctx.state);
+        Assert.AreNotEqual(0, ctx.af_inet);
+        Assert.AreNotEqual(0, ctx.af_inet6);
+
+        Assert.True(Sys.Cleanup(&ctx));
+        Assert.AreEqual(C.ContextState.Stopped, ctx.state);
     }
 
     [Test]
     public void UDP_Cleanup()
     {
-        Assert.True(Sys.Cleanup());
+        C.Context ctx = default;
+        Assert.True(Sys.Cleanup(&ctx));
+        Assert.AreEqual(C.ContextState.Stopped, ctx.state);
     }
 
     [Test]
     public void UDP_DoubleCleanup()
     {
-        Assert.True(Sys.Cleanup());
-        Assert.True(Sys.Cleanup());
+        C.Context ctx = default;
+        Assert.True(Sys.Cleanup(&ctx));
+        Assert.AreEqual(C.ContextState.Stopped, ctx.state);
+
+        Assert.True(Sys.Cleanup(&ctx));
+        Assert.AreEqual(C.ContextState.Stopped, ctx.state);
     }
 
     [Test]
     public void UDP_SetupCleanup()
     {
-        Assert.True(Sys.Setup());
-        Assert.True(Sys.Cleanup());
+        C.Context ctx = default;
+        Assert.True(Sys.Setup(&ctx));
+        Assert.AreEqual(C.ContextState.Started, ctx.state);
+        Assert.AreNotEqual(0, ctx.af_inet);
+        Assert.AreNotEqual(0, ctx.af_inet6);
+
+        Assert.True(Sys.Cleanup(&ctx));
+        Assert.AreEqual(C.ContextState.Stopped, ctx.state);
+    }
+
+    [Test]
+    public void UDP_DoubleSetupCleanup()
+    {
+        C.Context ctx = default;
+        Assert.True(Sys.Setup(&ctx));
+        Assert.AreEqual(C.ContextState.Started, ctx.state);
+        Assert.AreNotEqual(0, ctx.af_inet);
+        Assert.AreNotEqual(0, ctx.af_inet6);
+
+        Assert.True(Sys.Setup(&ctx));
+        Assert.AreEqual(C.ContextState.Started, ctx.state);
+        Assert.AreNotEqual(0, ctx.af_inet);
+        Assert.AreNotEqual(0, ctx.af_inet6);
+
+        Assert.True(Sys.Cleanup(&ctx));
+        Assert.AreEqual(C.ContextState.Stopped, ctx.state);
+
+        Assert.True(Sys.Cleanup(&ctx));
+        Assert.AreEqual(C.ContextState.Stopped, ctx.state);
     }
 
     [Test]
     public void UDP_SocketOpenClose()
     {
-        _sock = C.Socket.NewUDP(C.Endpoint.NewV4(_port));
-        fixed (C.Socket* sockptr = &_sock)
+        C.Context ctx = default;
+        Assert.True(Sys.Setup(&ctx));
+
+        C.Socket sock = C.Socket.NewUDP(&ctx, C.Endpoint.NewV4(&ctx, _port));
+        try
         {
-            Assert.True(Sys.Setup());
-            Assert.True(UDP.SocketOpen(sockptr));
-            Assert.True(UDP.SocketClose(sockptr));
+            Assert.True(UDP.SocketOpen(&sock));
+            Assert.AreEqual(C.SocketState.Bound, sock.state);
+            Assert.AreEqual(C.SocketFlags.None, sock.flags);
+            Assert.AreEqual(0, sock.error);
+            Assert.AreNotEqual(0, sock.fd);
+            Assert.False(C.Socket.HasFlag(&sock, C.SocketFlags.NonBlocking));
+
+            Assert.True(UDP.SocketClose(&sock));
+            Assert.AreEqual(C.SocketState.Closed, sock.state);
+            Assert.AreEqual(0, sock.fd);
+
+            Assert.True(Sys.Cleanup(&ctx));
+            Assert.AreEqual(C.ContextState.Stopped, ctx.state);
+        } finally
+        {
+            Sys.Cleanup(&ctx);
         }
     }
 
     [Test]
     public void UDP_SocketSetBlocking()
     {
-        _sock = C.Socket.NewUDP(C.Endpoint.NewV4(_port));
-        fixed (C.Socket* sockptr = &_sock)
+        C.Context ctx = default;
+        Assert.True(Sys.Setup(&ctx));
+
+        C.Socket sock = C.Socket.NewUDP(&ctx, C.Endpoint.NewV4(&ctx, _port));
+        try
         {
-            Assert.True(Sys.Setup());
-            Assert.True(UDP.SocketOpen(sockptr));
-            Assert.True(UDP.SocketNonBlocking(sockptr, true));
-            Assert.True(UDP.SocketClose(sockptr));
+            Assert.True(UDP.SocketOpen(&sock));
+            Assert.True(UDP.SocketNonBlocking(&sock, true));
+            Assert.True(C.Socket.HasFlag(&sock, C.SocketFlags.NonBlocking));
+
+            Assert.True(UDP.SocketClose(&sock));
+            Assert.True(Sys.Cleanup(&ctx));
+        }
+        finally
+        {
+            UDP.SocketClose(&sock);
+            Sys.Cleanup(&ctx);
         }
     }
 }

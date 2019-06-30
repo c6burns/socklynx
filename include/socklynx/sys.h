@@ -37,6 +37,8 @@ enum sl_sys_state {
 
 typedef struct sl_sys_s {
     enum sl_sys_state state;
+    uint16_t af_inet;
+    uint16_t af_inet6;
 } sl_sys_t;
 
 SL_INLINE_IMPL int sl_sys_errno(void)
@@ -63,6 +65,10 @@ SL_INLINE_IMPL int sl_sys_setup(sl_sys_t *sys)
 #endif
 
     if (rv == SL_OK) sys->state = SL_SYS_STATE_STARTED;
+
+    sys->af_inet = (uint16_t)AF_INET;
+    sys->af_inet6 = (uint16_t)AF_INET6;
+
     return rv;
 }
 

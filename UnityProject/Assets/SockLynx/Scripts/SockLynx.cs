@@ -24,20 +24,20 @@ using System.Runtime.CompilerServices;
 
 namespace SL
 {
-    public static class Sys
+    public static unsafe class Sys
     {
         public const MethodImplOptions SL_INLINE = MethodImplOptions.AggressiveInlining;
 
         [MethodImpl(Sys.SL_INLINE)]
-        public static bool Setup()
+        public static bool Setup(C.Context* ctx)
         {
-            return (C.socklynx_setup() == C.SL_OK);
+            return (C.socklynx_setup(ctx) == C.SL_OK);
         }
 
         [MethodImpl(Sys.SL_INLINE)]
-        public static bool Cleanup()
+        public static bool Cleanup(C.Context* ctx)
         {
-            return (C.socklynx_cleanup() == C.SL_OK);
+            return (C.socklynx_cleanup(ctx) == C.SL_OK);
         }
     }
 

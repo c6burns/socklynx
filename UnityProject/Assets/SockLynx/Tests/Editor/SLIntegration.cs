@@ -30,8 +30,6 @@ public unsafe class SLIntegration
     const ushort LISTEN_PORT = 51343;
 
     ushort _port = Util.HtoN(LISTEN_PORT);
-    C.Socket _sock_server;
-    C.Socket _sock_client;
 
     [OneTimeSetUp]
     public void FixtureSetup()
@@ -46,28 +44,11 @@ public unsafe class SLIntegration
     [SetUp]
     public void TestSetup()
     {
-        _sock_server = default;
-        _sock_client = default;
     }
 
     [TearDown]
     public void TestCleanup()
     {
-        if (_sock_client.fd != 0)
-        {
-            fixed (C.Socket* sockptr = &_sock_client)
-            {
-                UDP.SocketClose(sockptr);
-            }
-        }
-        if (_sock_server.fd != 0)
-        {
-            fixed (C.Socket* sockptr = &_sock_server)
-            {
-                UDP.SocketClose(sockptr);
-            }
-        }
-        Sys.Cleanup();
     }
 
     [Test]
@@ -75,51 +56,59 @@ public unsafe class SLIntegration
     {
         Random rand = new Random();
 
-        /* server side endpoints, socket, random payload, send/recv buffers */
-        C.IPv4 loopback = C.IPv4.New(127, 0, 0, 1);
-        C.Endpoint ep_server = C.Endpoint.NewV4(_port, loopback);
-        C.Endpoint ep_server_recv = default;
-        _sock_server = C.Socket.NewUDP(ep_server);
-        C.Buffer buf_server_recv;
-        C.Buffer buf_server_send;
-        byte[] pl_server = new byte[1235];
-        byte[] mem_server = new byte[1408];
-        rand.NextBytes(pl_server);
-        fixed (byte* bufptr = pl_server) buf_server_send = C.Buffer.New(bufptr, pl_server.Length);
-        fixed (byte* bufptr = mem_server) buf_server_recv = C.Buffer.New(bufptr, mem_server.Length);
+        C.Socket sock_server;
+        C.Socket sock_client;
 
-        /* client side endpoints, socket, random payload, send/recv buffers */
-        C.Endpoint ep_client = C.Endpoint.NewV4(_port + 1, loopback);
-        C.Endpoint ep_client_recv = default;
-        _sock_client = C.Socket.NewUDP(ep_client);
-        C.Buffer buf_client_recv;
-        C.Buffer buf_client_send;
-        byte[] pl_client = new byte[256];
-        byte[] mem_client = new byte[1408];
-        rand.NextBytes(pl_client);
-        fixed (byte* bufptr = pl_client) buf_client_send = C.Buffer.New(bufptr, pl_client.Length);
-        fixed (byte* bufptr = mem_client) buf_client_recv = C.Buffer.New(bufptr, mem_client.Length);
-
-        Assert.True(Sys.Setup());
-
-        fixed (C.Socket* sockptr_server = &_sock_server)
-        fixed (C.Socket* sockptr_client = &_sock_client)
+        C.Context ctx = default;
+        Assert.True(Sys.Setup(&ctx));
+        try
         {
-            Assert.True(UDP.SocketOpen(sockptr_server));
-            Assert.True(UDP.SocketOpen(sockptr_client));
+            /* server side endpoints, socket, random payload, send/recv buffers */
+            C.IPv4 loopback = C.IPv4.New(127, 0, 0, 1);
+            C.Endpoint ep_server = C.Endpoint.NewV4(&ctx, _port, loopback);
+            C.Endpoint ep_server_recv = default;
+            sock_server = C.Socket.NewUDP(&ctx, ep_server);
+            C.Buffer buf_server_recv;
+            C.Buffer buf_server_send;
+            byte[] pl_server = new byte[1235];
+            byte[] mem_server = new byte[1408];
+            rand.NextBytes(pl_server);
+            fixed (byte* bufptr = pl_server) buf_server_send = C.Buffer.New(bufptr, pl_server.Length);
+            fixed (byte* bufptr = mem_server) buf_server_recv = C.Buffer.New(bufptr, mem_server.Length);
 
-            Assert.AreEqual(UDP.SocketSend(sockptr_client, &buf_client_send, 1, &ep_server), pl_client.Length);
-            Assert.AreEqual(UDP.SocketRecv(sockptr_server, &buf_server_recv, 1, &ep_server_recv), pl_client.Length);
+            /* client side endpoints, socket, random payload, send/recv buffers */
+            C.Endpoint ep_client = C.Endpoint.NewV4(&ctx, _port + 1, loopback);
+            C.Endpoint ep_client_recv = default;
+            sock_client = C.Socket.NewUDP(&ctx, ep_client);
+            C.Buffer buf_client_recv;
+            C.Buffer buf_client_send;
+            byte[] pl_client = new byte[256];
+            byte[] mem_client = new byte[1408];
+            rand.NextBytes(pl_client);
+            fixed (byte* bufptr = pl_client) buf_client_send = C.Buffer.New(bufptr, pl_client.Length);
+            fixed (byte* bufptr = mem_client) buf_client_recv = C.Buffer.New(bufptr, mem_client.Length);
+
+            Assert.True(UDP.SocketOpen(&sock_server));
+            Assert.True(UDP.SocketOpen(&sock_client));
+
+            Assert.AreEqual(UDP.SocketSend(&sock_client, &buf_client_send, 1, &ep_server), pl_client.Length);
+            Assert.AreEqual(UDP.SocketRecv(&sock_server, &buf_server_recv, 1, &ep_server_recv), pl_client.Length);
             fixed (byte* bufptr = pl_client) Assert.True(Util.MemCmp(bufptr, 0, buf_server_recv.buf, 0, pl_client.Length));
             Assert.True(Util.MemCmp((byte*)&ep_client, 2, (byte*)&ep_server_recv, 2, sizeof(C.Endpoint) - 2));
 
-            Assert.AreEqual(UDP.SocketSend(sockptr_server, &buf_server_send, 1, &ep_client), pl_server.Length);
-            Assert.AreEqual(UDP.SocketRecv(sockptr_client, &buf_client_recv, 1, &ep_client_recv), pl_server.Length);
+            Assert.AreEqual(UDP.SocketSend(&sock_server, &buf_server_send, 1, &ep_client), pl_server.Length);
+            Assert.AreEqual(UDP.SocketRecv(&sock_client, &buf_client_recv, 1, &ep_client_recv), pl_server.Length);
             fixed (byte* bufptr = pl_server) Assert.True(Util.MemCmp(bufptr, 0, buf_client_recv.buf, 0, pl_server.Length));
             Assert.True(Util.MemCmp((byte*)&ep_server, 2, (byte*)&ep_client_recv, 2, sizeof(C.Endpoint) - 2));
 
-            Assert.True(UDP.SocketClose(sockptr_client));
-            Assert.True(UDP.SocketClose(sockptr_server));
+            Assert.True(UDP.SocketClose(&sock_server));
+            Assert.True(UDP.SocketClose(&sock_client));
+            Assert.True(Sys.Cleanup(&ctx));
+        } finally
+        {
+            UDP.SocketClose(&sock_server);
+            UDP.SocketClose(&sock_client);
+            Sys.Cleanup(&ctx);
         }
     }
 }

@@ -37,25 +37,24 @@
 #    include <unistd.h>
 #endif
 
-/* sock address family */
-#define SL_MANAGED_AF_IPV4 12340
-#define SL_MANAGED_AF_IPV6 12341
-#define SL_SOCK_AF_IPV4 AF_INET
-#define SL_SOCK_AF_IPV6 AF_INET6
+typedef enum sl_sock_af_e {
+    SL_SOCK_AF_IPV4 = AF_INET,
+    SL_SOCK_AF_IPV6 = AF_INET6,
+} sl_sock_af_t;
 
 typedef struct sl_sockaddr4_s {
-	uint16_t af;
-	uint16_t port;
-	uint32_t addr;
-	uint8_t pad[8];
+    uint16_t af;
+    uint16_t port;
+    uint32_t addr;
+    uint8_t pad[8];
 } sl_sockaddr4_t;
 
 typedef struct sl_sockaddr6_s {
-	uint16_t af;
-	uint16_t port;
-	uint32_t flowinfo;
-	uint8_t addr[16];
-	uint32_t scope_id;
+    uint16_t af;
+    uint16_t port;
+    uint32_t flowinfo;
+    uint8_t addr[16];
+    uint32_t scope_id;
 } sl_sockaddr6_t;
 
 typedef union sl_endpoint_u {
@@ -63,52 +62,16 @@ typedef union sl_endpoint_u {
     sl_sockaddr6_t addr6;
 } sl_endpoint_t;
 
-SL_INLINE_IMPL int sl_endpoint_af_check(sl_endpoint_t *endpoint)
-{
-    SL_ASSERT(endpoint);
-    switch (endpoint->addr4.af) {
-    case SL_MANAGED_AF_IPV4:
-        endpoint->addr4.af = SL_SOCK_AF_IPV4;
-        return SL_OK;
-    case SL_MANAGED_AF_IPV6:
-        endpoint->addr4.af = SL_SOCK_AF_IPV6;
-        return SL_OK;
-    case SL_SOCK_AF_IPV4:
-    case SL_SOCK_AF_IPV6:
-        return SL_OK;
-    }
-    return SL_ERR;
-}
-
 SL_INLINE_IMPL uint16_t sl_endpoint_af_get(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);
-	/* this should mask out anything weird (eg. apple using the high byte for len) */
-    return (endpoint->addr4.af & 0x0000ffff);
+    return endpoint->addr4.af;
 }
 
-SL_INLINE_IMPL int sl_endpoint_af_set(sl_endpoint_t *endpoint, uint16_t af)
+SL_INLINE_IMPL void sl_endpoint_af_set(sl_endpoint_t *endpoint, sl_sock_af_t af)
 {
     SL_ASSERT(endpoint);
-    switch (af) {
-    case SL_MANAGED_AF_IPV4:
-        endpoint->addr4.af = SL_SOCK_AF_IPV4;
-        return SL_OK;
-    case SL_MANAGED_AF_IPV6:
-        endpoint->addr4.af = SL_SOCK_AF_IPV6;
-        return SL_OK;
-    case SL_SOCK_AF_IPV4:
-    case SL_SOCK_AF_IPV6:
-        endpoint->addr4.af = af;
-        return SL_OK;
-    }
-    return SL_ERR;
-}
-
-SL_INLINE_IMPL struct sockaddr *sl_endpoint_addrany_set(sl_endpoint_t *endpoint)
-{
-    SL_ASSERT(endpoint);
-    return (struct sockaddr *)endpoint;
+    endpoint->addr4.af = af;
 }
 
 SL_INLINE_IMPL struct sockaddr *sl_endpoint_addr_get(sl_endpoint_t *endpoint)

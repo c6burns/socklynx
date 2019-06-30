@@ -40,26 +40,38 @@
 #    include <unistd.h>
 #endif
 
-/* sock state */
-#define SL_SOCK_STATE_NEW 0
-#define SL_SOCK_STATE_CREATED 1
-#define SL_SOCK_STATE_BOUND 2
-#define SL_SOCK_STATE_OPEN 3
-#define SL_SOCK_STATE_CLOSED 4
-#define SL_SOCK_STATE_ERROR 5
+typedef enum sl_sock_state_e {
+    SL_SOCK_STATE_NEW,
+    SL_SOCK_STATE_CREATED,
+    SL_SOCK_STATE_BOUND,
+    SL_SOCK_STATE_OPEN,
+    SL_SOCK_STATE_CLOSED,
+    SL_SOCK_STATE_ERROR,
+} sl_sock_state_t;
 
-/* sock direction */
-#define SL_SOCK_DIR_NONE 0
-#define SL_SOCK_DIR_INCOMING 1
-#define SL_SOCK_DIR_OUTGOING 2
+typedef enum sl_sock_dir_e {
+    SL_SOCK_DIR_NONE,
+    SL_SOCK_DIR_INCOMING,
+    SL_SOCK_DIR_OUTGOING,
+} sl_sock_dir_t;
 
-/* sock type */
-#define SL_SOCK_TYPE_DGRAM SOCK_DGRAM
-#define SL_SOCK_TYPE_STREAM SOCK_STREAM
+typedef enum sl_sock_type_e {
+    SL_SOCK_TYPE_DGRAM = SOCK_DGRAM,
+    SL_SOCK_TYPE_STREAM = SOCK_STREAM,
+} sl_sock_type_t;
 
-/* sock proto */
-#define SL_SOCK_PROTO_UDP IPPROTO_UDP
-#define SL_SOCK_PROTO_TCP IPPROTO_TCP
+typedef enum sl_sock_proto_e {
+    SL_SOCK_PROTO_UDP = IPPROTO_UDP,
+    SL_SOCK_PROTO_TCP = IPPROTO_TCP,
+} sl_sock_proto_t;
+
+typedef enum sl_sock_flag_e {
+    SL_SOCK_FLAG_NONBLOCKING = (1 << 0),
+    SL_SOCK_FLAG_WOULDBLOCK_READ = (1 << 1),
+    SL_SOCK_FLAG_WOULDBLOCK_WRITE = (1 << 2),
+    SL_SOCK_FLAG_IPV4_DISABLED = (1 << 3),
+    SL_SOCK_FLAG_IPV6_DISABLED = (1 << 4),
+} sl_sock_flag_t;
 
 typedef struct sl_sock_s {
     int64_t fd;
@@ -68,51 +80,23 @@ typedef struct sl_sock_s {
     uint32_t type;
     uint32_t proto;
     uint32_t error;
+    uint32_t flags;
     sl_endpoint_t endpoint;
 } sl_sock_t;
 
-SL_INLINE_IMPL int sl_sock_error_set(sl_sock_t *sock, uint32_t error)
+SL_INLINE_IMPL void sl_sock_error_set(sl_sock_t *sock, uint32_t error)
 {
     SL_ASSERT(sock);
     sock->error = error;
-    return SL_OK;
 }
 
 SL_INLINE_IMPL int sl_sock_fd_set(sl_sock_t *sock, int64_t sockfd)
 {
     SL_ASSERT(sock);
+
 #if SL_SOCK_API_WINSOCK
     if (sockfd == INVALID_SOCKET) {
         sl_sock_error_set(sock, sl_sys_errno());
-        switch (sock->error) {
-        case WSANOTINITIALISED:
-            break;
-        case WSAENETDOWN:
-            break;
-        case WSAEAFNOSUPPORT:
-            break;
-        case WSAEINPROGRESS:
-            break;
-        case WSAEMFILE:
-            break;
-        case WSAEINVAL:
-            break;
-        case WSAEINVALIDPROVIDER:
-            break;
-        case WSAEINVALIDPROCTABLE:
-            break;
-        case WSAENOBUFS:
-            break;
-        case WSAEPROTONOSUPPORT:
-            break;
-        case WSAEPROTOTYPE:
-            break;
-        case WSAEPROVIDERFAILEDINIT:
-            break;
-        case WSAESOCKTNOSUPPORT:
-            break;
-
-        }
         return SL_ERR;
     }
 #else
@@ -122,75 +106,66 @@ SL_INLINE_IMPL int sl_sock_fd_set(sl_sock_t *sock, int64_t sockfd)
     }
 #endif
     sock->fd = sockfd;
+
     return SL_OK;
 }
 
-SL_INLINE_IMPL int sl_sock_dir_set(sl_sock_t *sock, uint32_t dir)
+SL_INLINE_IMPL void sl_sock_dir_set(sl_sock_t *sock, sl_sock_dir_t dir)
 {
     SL_ASSERT(sock);
-    switch (dir) {
-    case SL_SOCK_DIR_INCOMING:
-    case SL_SOCK_DIR_OUTGOING:
-        sock->dir = dir;
-        return SL_OK;
-    }
-    return SL_ERR;
+    sock->dir = dir;
 }
 
-SL_INLINE_IMPL int sl_sock_state_set(sl_sock_t *sock, uint32_t state)
+SL_INLINE_IMPL void sl_sock_state_set(sl_sock_t *sock, sl_sock_state_t state)
 {
     SL_ASSERT(sock);
-    switch (state) {
-    case SL_SOCK_STATE_NEW:
-    case SL_SOCK_STATE_CREATED:
-    case SL_SOCK_STATE_BOUND:
-    case SL_SOCK_STATE_OPEN:
-    case SL_SOCK_STATE_CLOSED:
-    case SL_SOCK_STATE_ERROR:
-        sock->state = state;
-        return SL_OK;
-    }
-    return SL_ERR;
+    sock->state = state;
 }
 
-SL_INLINE_IMPL int sl_sock_type_set(sl_sock_t *sock, uint32_t type)
+SL_INLINE_IMPL void sl_sock_flags_set(sl_sock_t *sock, sl_sock_flag_t flags)
 {
     SL_ASSERT(sock);
-    switch (type) {
-    case SL_SOCK_TYPE_DGRAM:
-    case SL_SOCK_TYPE_STREAM:
-        sock->type = type;
-        return SL_OK;
-    }
-    return SL_ERR;
+    sock->flags |= flags;
 }
 
-SL_INLINE_IMPL int sl_sock_proto_set(sl_sock_t *sock, uint32_t proto)
+SL_INLINE_IMPL void sl_sock_flags_unset(sl_sock_t *sock, sl_sock_flag_t flags)
 {
     SL_ASSERT(sock);
-    switch (proto) {
-    case SL_SOCK_PROTO_UDP:
-    case SL_SOCK_PROTO_TCP:
-        sock->proto = proto;
-        return SL_OK;
-    }
-    return SL_ERR;
+    sock->flags &= ~flags;
 }
 
-SL_INLINE_IMPL int sl_sock_create(sl_sock_t *sock, uint32_t type, uint32_t proto)
+SL_INLINE_IMPL void sl_sock_flags_clear(sl_sock_t *sock)
 {
     SL_ASSERT(sock);
-    SL_GUARD(sock->state != SL_SOCK_STATE_NEW);
+    sock->flags = 0;
+}
 
-    SL_GUARD(sl_endpoint_af_check(&sock->endpoint));
-    SL_GUARD(sl_sock_type_set(sock, type));
-    SL_GUARD(sl_sock_proto_set(sock, proto));
+SL_INLINE_IMPL void sl_sock_type_set(sl_sock_t *sock, sl_sock_type_t type)
+{
+    SL_ASSERT(sock);
+    sock->type = type;
+}
+
+SL_INLINE_IMPL void sl_sock_proto_set(sl_sock_t *sock, sl_sock_proto_t proto)
+{
+    SL_ASSERT(sock);
+    sock->proto = proto;
+}
+
+SL_INLINE_IMPL int sl_sock_create(sl_sock_t *sock, sl_sock_type_t type, sl_sock_proto_t proto)
+{
+    SL_ASSERT(sock);
+    SL_ASSERT(sock->state == SL_SOCK_STATE_NEW || sock->state == SL_SOCK_STATE_CLOSED);
+
+    sl_sock_type_set(sock, type);
+    sl_sock_proto_set(sock, proto);
     SL_GUARD(sl_sock_fd_set(sock, socket(sl_endpoint_af_get(&sock->endpoint), type, proto)));
     if (sl_endpoint_is_ipv6(&sock->endpoint)) {
         int optval = 0;
         SL_GUARD(setsockopt(sock->fd, IPPROTO_IPV6, IPV6_V6ONLY, (const char *)&optval, sizeof(optval)));
+        sl_sock_flags_set(sock, SL_SOCK_FLAG_IPV4_DISABLED);
     }
-    SL_GUARD(sl_sock_state_set(sock, SL_SOCK_STATE_CREATED));
+    sl_sock_state_set(sock, SL_SOCK_STATE_CREATED);
 
     return SL_OK;
 }
@@ -207,15 +182,17 @@ SL_INLINE_IMPL int sl_sock_close(sl_sock_t *sock)
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
     }
+    SL_GUARD(sl_sock_fd_set(sock, 0));
+    sl_sock_state_set(sock, SL_SOCK_STATE_CLOSED);
+    sl_sock_flags_clear(sock);
 
-    memset(sock, 0, sizeof(*sock));
     return SL_OK;
 }
 
 SL_INLINE_IMPL int sl_sock_bind(sl_sock_t *sock)
 {
     SL_ASSERT(sock);
-    SL_GUARD(sock->state != SL_SOCK_STATE_CREATED);
+    SL_ASSERT(sock->state == SL_SOCK_STATE_CREATED);
 
 #if SL_SOCK_API_WINSOCK
     if (bind((SOCKET)sock->fd, sl_endpoint_addr_get(&sock->endpoint), sl_endpoint_size(&sock->endpoint))) {
@@ -225,13 +202,15 @@ SL_INLINE_IMPL int sl_sock_bind(sl_sock_t *sock)
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
     }
-    SL_GUARD(sl_sock_state_set(sock, SL_SOCK_STATE_BOUND));
+    sl_sock_state_set(sock, SL_SOCK_STATE_BOUND);
 
     return SL_OK;
 }
 
 SL_INLINE_IMPL int sl_sock_blocking_set(sl_sock_t *sock)
 {
+    SL_ASSERT(sock);
+
 #if SL_SOCK_API_WINSOCK
     uint32_t argp = 0;
     if (ioctlsocket((SOCKET)sock->fd, FIONBIO, &argp)) {
@@ -241,11 +220,15 @@ SL_INLINE_IMPL int sl_sock_blocking_set(sl_sock_t *sock)
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
     }
+    sl_sock_flags_unset(sock, SL_SOCK_FLAG_NONBLOCKING);
+
     return SL_OK;
 }
 
 SL_INLINE_IMPL int sl_sock_nonblocking_set(sl_sock_t *sock)
 {
+    SL_ASSERT(sock);
+
 #if SL_SOCK_API_WINSOCK
     uint32_t argp = 1;
     if (ioctlsocket((SOCKET)sock->fd, FIONBIO, &argp)) {
@@ -255,6 +238,8 @@ SL_INLINE_IMPL int sl_sock_nonblocking_set(sl_sock_t *sock)
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
     }
+    sl_sock_flags_set(sock, SL_SOCK_FLAG_NONBLOCKING);
+
     return SL_OK;
 }
 
@@ -263,7 +248,7 @@ SL_INLINE_IMPL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
     SL_ASSERT(sock);
     SL_ASSERT(buf && bufcount > 0);
     SL_ASSERT(endpoint);
-    SL_GUARD(sock->state != SL_SOCK_STATE_BOUND);
+    SL_ASSERT(sock->state == SL_SOCK_STATE_BOUND);
 
     int64_t bytes_sent;
     struct sockaddr *sa = sl_endpoint_addr_get(endpoint);
@@ -291,7 +276,7 @@ SL_INLINE_IMPL int sl_sock_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
     SL_ASSERT(sock);
     SL_ASSERT(buf && bufcount);
     SL_ASSERT(endpoint);
-    SL_GUARD(sock->state != SL_SOCK_STATE_BOUND);
+    SL_ASSERT(sock->state == SL_SOCK_STATE_BOUND);
 
     int64_t bytes_recv;
     int32_t epsize = sizeof(*endpoint);

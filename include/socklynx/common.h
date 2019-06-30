@@ -32,6 +32,7 @@
  * any laws or NDAs, please submit a PR.
  *
  * #define SL_SKIP_STATIC_ASSERT
+ * #define SL_SKIP_GUARDS
  * #define SL_C_MISSING_ASSERT
  * #define SL_C_MISSING_STDBOOL
  * #define SL_C_MISSING_STDINT
