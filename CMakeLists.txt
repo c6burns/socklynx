@@ -35,9 +35,9 @@ set(SL_SRCS
 )
 include_directories(include)
 include_directories(src/socklynx)
-add_library(socklynx MODULE ${SL_SRCS})
+add_library(socklynxDSO MODULE ${SL_SRCS})
 if(WIN32)
-	target_link_libraries(socklynx Ws2_32.lib)
+	target_link_libraries(socklynxDSO Ws2_32.lib)
 endif()
 
 #include_directories(src/socklynx_server)
@@ -45,30 +45,30 @@ endif()
 #	src/socklynx_server/server.c
 #	include/socklynx_server/server.h
 #)
-#target_link_libraries(socklynx_server socklynx)
+#target_link_libraries(socklynx_server socklynxDSO)
 
 #include_directories(src/socklynx_loadgen)
 #add_executable(socklynx_loadgen
 #	src/socklynx_loadgen/loadgen.c
 #	include/socklynx_loadgen/loadgen.h
 #)
-#target_link_libraries(socklynx_loadgen socklynx)
+#target_link_libraries(socklynx_loadgen socklynxDSO)
 
 if(NOT APPLE)
 	add_custom_command(
-		TARGET socklynx
+		TARGET socklynxDSO
 		POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy
-			$<TARGET_FILE:socklynx>
-			${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynx>
+			$<TARGET_FILE:socklynxDSO>
+			${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynxDSO>
 	)
 else()
-	set_target_properties(socklynx PROPERTIES BUNDLE TRUE)
+	set_target_properties(socklynxDSO PROPERTIES BUNDLE TRUE)
 	add_custom_command(
-		TARGET socklynx
+		TARGET socklynxDSO
 		POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy
-			$<TARGET_FILE:socklynx>
-			${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynx>.bundle
+			$<TARGET_FILE:socklynxDSO>
+			${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynxDSO>.bundle
 	)
 endif()

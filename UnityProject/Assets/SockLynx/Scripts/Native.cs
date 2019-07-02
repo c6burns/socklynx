@@ -27,7 +27,6 @@
 #   define SL_SOCK_API_WINSOCK
 #endif
 
-using System;
 using System.Security;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
@@ -35,11 +34,13 @@ using System.Runtime.CompilerServices;
 #if UNITY_EDITOR
 [assembly: InternalsVisibleTo("SockLynxTests")]
 #endif
+
 namespace SL
 {
     [SuppressUnmanagedCodeSecurity]
     public static unsafe class C
     {
+        public const string SL_DSO_NAME = "socklynxDSO";
         public const int SL_OK = 0;
         public const int SL_IP4_SIZE = sizeof(uint);
         public const int SL_IP6_SIZE = 16;
@@ -251,25 +252,25 @@ namespace SL
             }
         }
 
-        [DllImport("socklynx", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(SL_DSO_NAME, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int socklynx_setup(Context* ctx);
 
-        [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(SL_DSO_NAME, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int socklynx_cleanup(Context* ctx);
 
-        [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(SL_DSO_NAME, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int socklynx_socket_nonblocking(Socket* sock, int enabled);
 
-        [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(SL_DSO_NAME, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int socklynx_socket_open(Socket* sock);
 
-        [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(SL_DSO_NAME, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int socklynx_socket_close(Socket* sock);
 
-        [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(SL_DSO_NAME, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int socklynx_socket_send(Socket* sock, Buffer* buf, int bufcount, Endpoint* endpoint);
 
-        [DllImport("socklynx", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(SL_DSO_NAME, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int socklynx_socket_recv(Socket* sock, Buffer* buf, int bufcount, Endpoint* endpoint);
     }
 }

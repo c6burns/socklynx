@@ -6,47 +6,22 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
-    <PluginDir>../../UnityProject/Assets/SockLynx/Plugins/x86_64</PluginDir>
-    <OSPlatformWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</OSPlatformWindows>
+    <BuildInParallel>false</BuildInParallel>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(OSPlatformWindows)'=='true'">
-    <DefineConstants>SL_PLATFORM_WINDOWS</DefineConstants>
-    <DefineConstants>SL_SOCK_API_WINSOCK</DefineConstants>
-  </PropertyGroup>
+  <!--<Import Project="../Common/SockLynx.Platform.targets" />-->
+  <!--<Import Project="../Common/SockLynx.DSO.targets" />-->
 
-  <PropertyGroup Condition="'$(OSPlatformLinux)'=='true'">
-    <DefineConstants>SL_PLATFORM_LINUX</DefineConstants>
-    <DefineConstants>SL_SOCK_API_POSIX</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(OSPlatformOSX)'=='true'">
-    <DefineConstants>SL_PLATFORM_OSX</DefineConstants>
-    <DefineConstants>SL_SOCK_API_POSIX</DefineConstants>
-  </PropertyGroup>
+  <!--<ItemGroup>
+    <ProjectReference Include="../SockLynx/SockLynx.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>-->
 
   <ItemGroup>
     <Compile Include="../../UnityProject/Assets/SockLynx/Scripts/*.cs" />
     <Compile Include="../../UnityProject/Assets/SockLynx/Tests/Editor/*.cs" />
   </ItemGroup>
-
-  <Target Name="CopyDSO" BeforeTargets="Build">
-    <Copy
-      Condition="Exists('$(PluginDir)/socklynx.dll')"
-	  SourceFiles="$(PluginDir)/socklynx.dll"
-	  DestinationFiles="$(OutputPath)/socklynx.dll"
-	  />
-	<Copy
-      Condition="Exists('$(PluginDir)/libsocklynx.so')"
-	  SourceFiles="$(PluginDir)/libsocklynx.so"
-	  DestinationFiles="$(OutputPath)/libsocklynx.so"
-	  />
-	<Copy
-      Condition="Exists('$(PluginDir)/socklynx.bundle')"
-	  SourceFiles="$(PluginDir)/socklynx.bundle"
-	  DestinationFiles="$(OutputPath)/socklynx.dylib"
-	  />
-  </Target>
 
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.12.0" />

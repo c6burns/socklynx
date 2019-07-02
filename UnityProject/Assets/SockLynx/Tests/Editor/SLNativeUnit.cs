@@ -25,6 +25,9 @@ using SL;
 using System;
 using System.Net;
 
+/* disable unreachable warning due to branching on const C.SL_IPV6_ENABLED */
+#pragma warning disable CS0162
+
 public unsafe class SLNativeUnit
 {
     const ushort LISTEN_PORT = 51343;
@@ -136,6 +139,89 @@ public unsafe class SLNativeUnit
     }
 
     [Test]
+    public void C_Endpoint_NewV4()
+    {
+        Assert.True(IPAddress.TryParse("127.0.0.1", out IPAddress netip));
+
+        C.Context ctx = default;
+        Assert.True(Sys.Setup(&ctx));
+
+        try
+        {
+            C.Endpoint endpoint = C.Endpoint.NewV4(&ctx, _port, C.IPv4.New(127, 0, 0, 1));
+            Assert.AreEqual(ctx.af_inet, endpoint.af);
+            Assert.AreEqual(_port, endpoint.port);
+
+            fixed (byte* pnetip = netip.GetAddressBytes())
+                Assert.True(Util.MemCmp((byte*)&endpoint.addr4, 0, pnetip, 0, sizeof(C.IPv4)));
+
+            Assert.True(Sys.Cleanup(&ctx));
+        }
+        finally
+        {
+            Sys.Cleanup(&ctx);
+        }
+    }
+
+    [Test]
+    public void C_Endpoint_NewV6()
+    {
+        if (!C.SL_IPV6_ENABLED) return;
+
+        Assert.True(IPAddress.TryParse("fe80::300e:5130:704b:a647%21", out IPAddress netip));
+
+        C.Context ctx = default;
+        Assert.True(Sys.Setup(&ctx));
+        try
+        {
+            C.Endpoint endpoint = C.Endpoint.NewV6(&ctx, _port, C.IPv6.New(0xfe80, 0, 0, 0, 0x300e, 0x5130, 0x704b, 0xa647));
+            Assert.AreEqual(ctx.af_inet6, endpoint.af);
+            Assert.AreEqual(_port, endpoint.port);
+
+            fixed (byte* pnetip = netip.GetAddressBytes())
+                Assert.True(Util.MemCmp((byte*)&endpoint.addr6, 0, pnetip, 0, C.SL_IP6_SIZE));
+
+            Assert.True(Sys.Cleanup(&ctx));
+        }
+        finally
+        {
+            Sys.Cleanup(&ctx);
+        }
+    }
+
+    [Test]
+    public void C_Socket_NewUDP()
+    {
+        Assert.True(IPAddress.TryParse("127.0.0.1", out IPAddress netip));
+
+        C.Context ctx = default;
+        Assert.True(Sys.Setup(&ctx));
+
+        try
+        {
+            C.Socket sock = C.Socket.NewUDP(&ctx, C.Endpoint.NewV4(&ctx, _port, C.IPv4.New(127, 0, 0, 1)));
+            Assert.AreEqual(0, sock.fd);
+            Assert.AreEqual(0, sock.dir);
+            Assert.AreEqual(C.SocketState.New, sock.state);
+            Assert.AreEqual(0, sock.type);
+            Assert.AreEqual(0, sock.proto);
+            Assert.AreEqual(0, sock.error);
+            Assert.AreEqual(C.SocketFlags.None, sock.flags);
+            Assert.AreEqual(ctx.af_inet, sock.endpoint.af);
+            Assert.AreEqual(_port, sock.endpoint.port);
+
+            fixed (byte* pnetip = netip.GetAddressBytes())
+                Assert.True(Util.MemCmp((byte*)&sock.endpoint.addr4, 0, pnetip, 0, sizeof(C.IPv4)));
+
+            Assert.True(Sys.Cleanup(&ctx));
+        }
+        finally
+        {
+            Sys.Cleanup(&ctx);
+        }
+    }
+
+    [Test]
     public void UDP_SocketOpenClose()
     {
         C.Context ctx = default;
@@ -186,3 +272,5 @@ public unsafe class SLNativeUnit
         }
     }
 }
+
+#pragma warning disable CS0162

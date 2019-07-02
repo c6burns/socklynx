@@ -1,0 +1,9 @@
+<Project>
+
+  <ItemGroup>
+    <Content Condition="Exists('$(PluginDir)/socklynxDSO.dll')" Include="$(PluginDir)/socklynxDSO.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

@@ -91,13 +91,13 @@ public unsafe class SLIntegration
             Assert.True(UDP.SocketOpen(&sock_server));
             Assert.True(UDP.SocketOpen(&sock_client));
 
-            Assert.AreEqual(UDP.SocketSend(&sock_client, &buf_client_send, 1, &ep_server), pl_client.Length);
-            Assert.AreEqual(UDP.SocketRecv(&sock_server, &buf_server_recv, 1, &ep_server_recv), pl_client.Length);
+            Assert.AreEqual(pl_client.Length, UDP.SocketSend(&sock_client, &buf_client_send, 1, &ep_server));
+            Assert.AreEqual(pl_client.Length, UDP.SocketRecv(&sock_server, &buf_server_recv, 1, &ep_server_recv));
             fixed (byte* bufptr = pl_client) Assert.True(Util.MemCmp(bufptr, 0, buf_server_recv.buf, 0, pl_client.Length));
             Assert.True(Util.MemCmp((byte*)&ep_client, 2, (byte*)&ep_server_recv, 2, sizeof(C.Endpoint) - 2));
 
-            Assert.AreEqual(UDP.SocketSend(&sock_server, &buf_server_send, 1, &ep_client), pl_server.Length);
-            Assert.AreEqual(UDP.SocketRecv(&sock_client, &buf_client_recv, 1, &ep_client_recv), pl_server.Length);
+            Assert.AreEqual(pl_server.Length, UDP.SocketSend(&sock_server, &buf_server_send, 1, &ep_client));
+            Assert.AreEqual(pl_server.Length, UDP.SocketRecv(&sock_client, &buf_client_recv, 1, &ep_client_recv));
             fixed (byte* bufptr = pl_server) Assert.True(Util.MemCmp(bufptr, 0, buf_client_recv.buf, 0, pl_server.Length));
             Assert.True(Util.MemCmp((byte*)&ep_server, 2, (byte*)&ep_client_recv, 2, sizeof(C.Endpoint) - 2));
 
