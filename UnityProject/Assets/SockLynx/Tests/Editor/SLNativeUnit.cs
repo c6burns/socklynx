@@ -234,7 +234,6 @@ public unsafe class SLNativeUnit
             Assert.AreEqual(C.SocketState.Bound, sock.state);
             Assert.AreEqual(C.SocketFlags.None, sock.flags);
             Assert.AreEqual(0, sock.error);
-            Assert.AreNotEqual(0, sock.fd);
             Assert.False(C.Socket.HasFlag(&sock, C.SocketFlags.NonBlocking));
 
             Assert.True(UDP.SocketClose(&sock));
