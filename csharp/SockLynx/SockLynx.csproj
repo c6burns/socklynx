@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
@@ -18,7 +18,7 @@
             <Output TaskParameter="TargetOutputs" PropertyName="MSBuildTaskAssemblies" />
         </MSBuild>-->
         <Message Text="MSBuildToolsPath: $(MSBuildToolsPath)" Importance="high" />
-        <BannerTask TextFile="../BuildTasks/Banner.txt" />
+        <BannerTask TextFile="../MSBuildTasks/Banner.txt" />
     </Target>
 
     <Target Name="LibraryBuild" AfterTargets="BeforeBuild">

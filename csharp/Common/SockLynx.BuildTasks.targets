@@ -4,7 +4,7 @@
             <TextFile ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
         </ParameterGroup>
         <Task>
-            <Code Type="Class" Language="cs" Source="../BuildTasks/BannerTask.cs" />
+            <Code Type="Class" Language="cs" Source="../MSBuildTasks/BannerTask.cs" />
         </Task>
     </UsingTask>
 
