@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SockLynx", "csharp\SockLynx\SockLynx.csproj", "{9272ADB9-EBC4-4B89-B8FA-56500B8EEE0E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleBuild", "SockLynxCSharp\ConsoleBuild\ConsoleBuild.csproj", "{9272ADB9-EBC4-4B89-B8FA-56500B8EEE0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

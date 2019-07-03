@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <BuildInParallel>false</BuildInParallel>
+    </PropertyGroup>
+
+    <Import Project="SockLynx.Platform.targets" />
+    <Import Project="SockLynx.DSO.targets" />
+
+    <Target Name="CMakeBuild" BeforeTargets="Build">
+    </Target>
+
+    <ItemGroup>
+        <Compile Include="$(ProjDir)/UnityProject/Assets/SockLynx/Scripts/*.cs" />
+    </ItemGroup>
+
+</Project>

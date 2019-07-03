@@ -1,0 +1,16 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <ItemGroup>
+        <Compile Include="BuildLogger.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Microsoft.Build.Framework">
+            <HintPath>$(SdkDir)/Microsoft.Build.Framework.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Build.Utilities">
+            <HintPath>$(SdkDir)/Microsoft.Build.Utilities.Core.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+</Project>

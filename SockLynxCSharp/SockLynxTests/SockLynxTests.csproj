@@ -9,14 +9,8 @@
     <BuildInParallel>false</BuildInParallel>
   </PropertyGroup>
 
-  <!--<Import Project="../Common/SockLynx.Platform.targets" />-->
-  <!--<Import Project="../Common/SockLynx.DSO.targets" />-->
-
-  <!--<ItemGroup>
-    <ProjectReference Include="../SockLynx/SockLynx.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>-->
+  <Import Project="../Common/SockLynx.Platform.targets" />
+  <Import Project="../Common/SockLynx.DSO.targets" />
 
   <ItemGroup>
     <Compile Include="../../UnityProject/Assets/SockLynx/Scripts/*.cs" />
