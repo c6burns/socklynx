@@ -1,0 +1,31 @@
+<Project InitialTargets="" Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+        <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+        <EnableDefaultItems>false</EnableDefaultItems>
+        <CurDir>$(MSBuildThisFileDirectory)</CurDir>
+    </PropertyGroup>
+
+    <Import Project="BuildTasks.targets" />
+    <Import Project="BuildLogger.targets" />
+
+    <Target Name="CustomClean" BeforeTargets="Clean">
+        <Delete Files="$(CsDir)/Outputs/**" />
+    </Target>
+
+    <Target Name="ConsoleBuild" AfterTargets="Build" Condition="'$(BuildingInsideVisualStudio)' != 'true'">
+        <!-- <BannerTask TextFile="MSBuild/Banner.txt" /> -->
+
+        <PropertyGroup>
+            <DotNetCLI>$(DOTNET_HOST_PATH)</DotNetCLI>
+            <ArgsCLI>-nologo</ArgsCLI>
+            <PropsCLI>-p:ProjDir="$(ProjDir)" -p:CsDir="$(CsDir)" -p:SdkDir="$(SdkDir)"</PropsCLI>
+            <SLProj>$(ProjDir)SockLynxCSharp/SockLynx/SockLynx.csproj</SLProj>
+        </PropertyGroup>
+        
+        <Exec WorkingDirectory="$(ProjDir)" Command="$(DotNetCLI) build $(ArgsCLI) $(PropsCLI) $(SLProj)" />
+    </Target>
+
+</Project>
