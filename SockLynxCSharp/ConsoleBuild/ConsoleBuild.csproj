@@ -1,4 +1,4 @@
-<Project InitialTargets="" Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,26 +6,53 @@
         <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
         <EnableDefaultItems>false</EnableDefaultItems>
         <CurDir>$(MSBuildThisFileDirectory)</CurDir>
+        <CurDir Condition="!HasTrailingSlash('$(CurDir)')">$(CurDir)\</CurDir>
     </PropertyGroup>
 
-    <Import Project="BuildTasks.targets" />
-    <Import Project="BuildLogger.targets" />
+    <!--<Import Project="$(CurDir)CoreSdkLocator.targets" />-->
+    <Import Project="$(CsDir)SockLynx\SockLynx.Platform.targets" />
+    <Import Project="$(CurDir)BuildCMake.targets" />
+    <Import Project="$(CurDir)BuildTasks.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
+    <Import Project="$(CurDir)BuildLogger.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
 
     <Target Name="CustomClean" BeforeTargets="Clean">
-        <Delete Files="$(CsDir)/Outputs/**" />
+        <Delete Files="$(CsDir)Outputs\**" />
+    </Target>
+
+    <Target Name="IDEBuild" AfterTargets="Build">
+        <PropertyGroup>
+            <DotNetCLI>dotnet</DotNetCLI>
+            <ArgsCLI>-nologo</ArgsCLI>
+            <SLProj>"$(ProjDir)SockLynxCSharp\SockLynx\SockLynx.csproj"</SLProj>
+        </PropertyGroup>
+        <!--<Message Text="VisualStudioVersion: $(VisualStudioVersion)" Importance="high" />-->
+        <!--<Exec WorkingDirectory="$(ProjDir)" Command="$(DotNetCLI) build $(ArgsCLI) $(SLProj)" />-->
+    </Target>
+
+    <Target Name="IDETest" AfterTargets="Build">
+        <PropertyGroup>
+            <DotNetCLI>dotnet</DotNetCLI>
+            <ArgsCLI>-nologo</ArgsCLI>
+            <SLProj>"$(ProjDir)SockLynxCSharp\SockLynx\SockLynx.csproj"</SLProj>
+        </PropertyGroup>
+
+        <!--<Exec WorkingDirectory="$(ProjDir)" Command="$(DotNetCLI) build $(ArgsCLI) $(SLProj)" />-->
     </Target>
 
     <Target Name="ConsoleBuild" AfterTargets="Build" Condition="'$(BuildingInsideVisualStudio)' != 'true'">
-        <!-- <BannerTask TextFile="MSBuild/Banner.txt" /> -->
+        <BannerTask TextFile="Banner.txt" />
 
         <PropertyGroup>
-            <DotNetCLI>$(DOTNET_HOST_PATH)</DotNetCLI>
+            <DotNetCLI>dotnet</DotNetCLI>
             <ArgsCLI>-nologo</ArgsCLI>
             <PropsCLI>-p:ProjDir="$(ProjDir)" -p:CsDir="$(CsDir)" -p:SdkDir="$(SdkDir)"</PropsCLI>
-            <SLProj>$(ProjDir)SockLynxCSharp/SockLynx/SockLynx.csproj</SLProj>
+            <SLProj>"$(ProjDir)SockLynxCSharp\SockLynx\SockLynx.csproj"</SLProj>
         </PropertyGroup>
-        
-        <Exec WorkingDirectory="$(ProjDir)" Command="$(DotNetCLI) build $(ArgsCLI) $(PropsCLI) $(SLProj)" />
+
+        <Exec WorkingDirectory="$(ProjDir)" Command="$(DotNetCLI) build $(ArgsCLI) $(SLProj)" />
+    </Target>
+
+    <Target Name="ConsoleTest" BeforeTargets="Test" Condition="'$(BuildingInsideVisualStudio)' != 'true'">
     </Target>
 
 </Project>

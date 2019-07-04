@@ -6,10 +6,10 @@
 
     <ItemGroup>
         <Reference Include="Microsoft.Build.Framework">
-            <HintPath>$(SdkDir)/Microsoft.Build.Framework.dll</HintPath>
+            <HintPath>$(SdkDir)Microsoft.Build.Framework.dll</HintPath>
         </Reference>
         <Reference Include="Microsoft.Build.Utilities">
-            <HintPath>$(SdkDir)/Microsoft.Build.Utilities.Core.dll</HintPath>
+            <HintPath>$(SdkDir)Microsoft.Build.Utilities.Core.dll</HintPath>
         </Reference>
     </ItemGroup>
 

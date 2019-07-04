@@ -1,0 +1,26 @@
+<Project InitialTargets="LocateCoreSdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Target Name="LocateCoreSdk">
+        <Exec WorkingDirectory="$(ProjDir)" ConsoleToMsBuild="true" StandardOutputImportance="low" Command="dotnet --list-sdks">
+            <Output TaskParameter="ConsoleOutput" ItemName="CLISdkOutputs" />
+        </Exec>
+        
+        <PropertyGroup>
+			<CLISdkLine Condition="$([System.Convert]::ToString(@(CLISdkOutputs->%(identity))).Contains($(NETCoreSdkVersion)))">@(CLISdkOutputs)</CLISdkLine>
+            <SdkDirWithBrackets>$([System.Text.RegularExpressions.Regex]::Match($(CLISdkLine), `\[.+\]`))</SdkDirWithBrackets>
+            <SdkDirSubstrLen>$([MSBuild]::Subtract($(SdkDirWithBrackets.Length), 2))</SdkDirSubstrLen>
+            <SdkDir>$(SdkDirWithBrackets.Substring(1, $(SdkDirSubstrLen)))</SdkDir>
+        </PropertyGroup>
+
+        <Message Text="SdkDir: $(SdkDir)" Importance="high" />
+    </Target>
+
+    <!-- This simpler one works, but seemed more subject to future changes and has a less clean final result -->
+    <Target Name="LocateCoreSdkAlternate">
+        <PropertyGroup>
+            <SdkDir>$([System.IO.Path]::GetDirectoryName($(NETCoreSdkBundledVersionsProps)))</SdkDir>
+            <SdkDir Condition="!HasTrailingSlash('$(SdkDir)')">$(SdkDir)\</SdkDir>
+        </PropertyGroup>
+
+        <Message Text="SdkDir: $(SdkDir)" Importance="high" />
+    </Target>
+</Project>

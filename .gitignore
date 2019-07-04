@@ -12,18 +12,15 @@ build*/
 # autogen unity artifacts
 ExportedObj/
 .consulo/
-/*.csproj
-/*.unityproj
-/*.sln
-/*.suo
-/*.tmp
-/*.user
-/*.userprefs
-/*.pidb
-/*.booproj
-/*.svd
-/*.pdb
-/*.opendb
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
 
 # symbol meta files
 /*.pidb.meta
@@ -37,6 +34,9 @@ sysinfo.txt
 *.unitypackage
 
 # unity unneeded project folders
+UnityProject/**/*.csproj
+UnityProject/**/*.unityproj
+UnityProject/**/*.sln
 UnityProject/[Ll]ibrary/
 UnityProject/[Tt]emp/
 UnityProject/[Oo]bj/
