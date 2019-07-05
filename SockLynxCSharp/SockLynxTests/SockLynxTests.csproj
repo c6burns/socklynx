@@ -9,12 +9,12 @@
     <BuildInParallel>false</BuildInParallel>
   </PropertyGroup>
 
-  <Import Project="../Common/SockLynx.Platform.targets" />
-  <Import Project="../Common/SockLynx.DSO.targets" />
+  <Import Project="$(CsDir)SockLynx\SockLynx.Platform.targets" />
+  <Import Project="$(CsDir)SockLynx\SockLynx.DSO.targets" />
 
   <ItemGroup>
-    <Compile Include="../../UnityProject/Assets/SockLynx/Scripts/*.cs" />
-    <Compile Include="../../UnityProject/Assets/SockLynx/Tests/Editor/*.cs" />
+    <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Scripts\*.cs" />
+    <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Tests\Editor\*.cs" />
   </ItemGroup>
 
   <ItemGroup>

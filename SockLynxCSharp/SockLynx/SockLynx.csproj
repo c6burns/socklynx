@@ -14,7 +14,7 @@
     </Target>
 
     <ItemGroup>
-        <Compile Include="$(ProjDir)/UnityProject/Assets/SockLynx/Scripts/*.cs" />
+        <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Scripts\*.cs" />
     </ItemGroup>
 
 </Project>

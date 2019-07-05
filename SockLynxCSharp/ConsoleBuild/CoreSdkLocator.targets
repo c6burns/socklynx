@@ -1,6 +1,6 @@
 <Project InitialTargets="LocateCoreSdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <Target Name="LocateCoreSdk">
-        <Exec WorkingDirectory="$(ProjDir)" ConsoleToMsBuild="true" StandardOutputImportance="low" Command="dotnet --list-sdks">
+        <Exec WorkingDirectory="$(SlnDir)" ConsoleToMsBuild="true" StandardOutputImportance="low" Command="dotnet --list-sdks">
             <Output TaskParameter="ConsoleOutput" ItemName="CLISdkOutputs" />
         </Exec>
         

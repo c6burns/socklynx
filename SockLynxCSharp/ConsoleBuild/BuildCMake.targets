@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <CMakeProjName>socklynx</CMakeProjName>
-        <CMakeBinaryDir>$(ProjDir)build</CMakeBinaryDir>
+        <CMakeBinaryDir>$(SlnDir)build</CMakeBinaryDir>
         <CMakeBuildType Condition="'$(CMakeBuildType)' == ''">Debug</CMakeBuildType>
         <CMakeBuildType Condition="'$(Configuration)' == 'Release'">Release</CMakeBuildType>
         <CMakeGenerator></CMakeGenerator>
@@ -10,12 +10,13 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(OSPlatformWindows)' == 'true'">
-        <CMakeWinArch>WIN64</CMakeWinArch>
-        <CMakeWinArch Condition="'$(Configuration)' == 'x86'">WIN32</CMakeWinArch>
-        <CMakeGenerator>-A $(CMakeWinArch) -T v141</CMakeGenerator>
+        <CMakeVSArch></CMakeVSArch>
+        <CMakeVSArch Condition="'$(Configuration)' == 'x86'">-A WIN32</CMakeVSArch>
+        <CMakeVSToolset>-T v141</CMakeVSToolset>
+        <CMakeGenerator>$(CMakeVSArch) $(CMakeVSToolset)</CMakeGenerator>
         <!--<CMakeGenerator Condition="'$(VisualStudioVersion)' == '16.0'">-G "Visual Studio 16 2019" -A $(CMakeWinArch) -T v141</CMakeGenerator>-->
     </PropertyGroup>
-    <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
+    <PropertyGroup Condition="'$(OSPlatformWindows)' != 'true'">
         <CMakeConfigBuildType>-DCMAKE_BUILD_TYPE=$(CMakeBuildType)</CMakeConfigBuildType>
     </PropertyGroup>
 
@@ -23,13 +24,13 @@
         <Message Text="CMake -- cleaning project: $(CMakeProjName)" Importance="high" />
         <RemoveDir Directories="$(CMakeBinaryDir)"/>
         <MakeDir Directories="$(CMakeBinaryDir)"/>
-        <OnError ExecuteTargets="CMakeBuildFailed" />
+        <OnError ExecuteTargets="CMakeCleanFailed" />
     </Target>
     
     <Target Name="CMakeConfigTarget" BeforeTargets="Build">
         <Message Text="CMake -- configuring $(CMakeBuildType) $(Platform): $(CMakeProjName)" Importance="high" />
         <MakeDir Directories="$(CMakeBinaryDir)" />
-        <Exec Command="cmake $(CMakeConfigBuildType) .." WorkingDirectory="$(CMakeBinaryDir)" StandardOutputImportance="low" StandardErrorImportance="high" />
+        <Exec Command="cmake $(CMakeGenerator) $(CMakeConfigBuildType) .." WorkingDirectory="$(CMakeBinaryDir)" StandardOutputImportance="low" StandardErrorImportance="high" />
         <OnError ExecuteTargets="CMakeBuildFailed" />
     </Target>
 
@@ -42,8 +43,18 @@
     <Target Name="CMakeBuildSuccess" BeforeTargets="Build">
         <Message Text="CMake -- build succeeded: $(CMakeProjName)" Importance="high" />
     </Target>
+
+    <Target Name="CMakeCleanFailed">
+        <Warning Text="CMake -- the most common cause of CMake clean errors is file locking (eg. console in the build dir)" />
+        <Warning Text="CMake -- please unlock or reboot and try cleaning again before filing an issue on github:" />
+        <Warning Text="CMake -- https://github.com/cburns/socklynx" />
+        <Error Text="CMake -- build failed: $(CMakeProjName)" />
+    </Target>
   
     <Target Name="CMakeBuildFailed">
+        <Warning Text="CMake -- the most common cause of CMake build errors is changing config without cleaning" />
+        <Warning Text="CMake -- please try cleaning and building again before filing an issue on github:" />
+        <Warning Text="CMake -- https://github.com/cburns/socklynx" />
         <Error Text="CMake -- build failed: $(CMakeProjName)" />
     </Target>
 
