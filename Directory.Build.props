@@ -1,10 +1,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjDir>$(SolutionDir)</ProjDir>
-        <ProjDir Condition="!HasTrailingSlash('$(ProjDir)')">$(ProjDir)\</ProjDir>
+        <SlnDir>$(MSBuildThisFileDirectory)</SlnDir>
+        <SlnDir Condition="!HasTrailingSlash('$(ProjDir)')">$(ProjDir)\</SlnDir>
         
-        <CsDir>$(SolutionDir)SockLynxCSharp</CsDir>
-        <CsDir Condition="!HasTrailingSlash('$(CsDir)')">$(CsDir)\</CsDir>
+        <CsDir>$(SolutionDir)SockLynxCSharp\</CsDir>
         
         <SdkDir>$(MSBuildExtensionsPath)</SdkDir>
         <SdkDir Condition="!HasTrailingSlash('$(SdkDir)')">$(SdkDir)\</SdkDir>
