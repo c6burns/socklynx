@@ -1,20 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
         <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
         <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
         <EnableDefaultItems>false</EnableDefaultItems>
-        <ProjDir>$(MSBuildThisFileDirectory)</ProjDir>
-        <ProjDir Condition="!HasTrailingSlash('$(ProjDir)')">$(ProjDir)\</ProjDir>
     </PropertyGroup>
 
-    <!--<Import Project="$(ProjDir)CoreSdkLocator.targets" />-->
+    <!--<Import Project="CoreSdkLocator.targets" />-->
     
-    <Import Project="$(CsDir)SockLynx\SockLynx.Platform.targets" />
-    <!-- <Import Project="$(ProjDir)BuildCMake.targets" /> -->
-    <Import Project="$(ProjDir)BuildTasks.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
-    <Import Project="$(ProjDir)BuildLogger.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
+    <Import Project="BuildTasks.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
+    <!-- <Import Project="BuildLogger.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" /> -->
 
     <Target Name="ConsoleBanner" BeforeTargets="Build" Condition="'$(BuildingInsideVisualStudio)' != 'true'">
         <BannerTask TextFile="Banner.txt" />

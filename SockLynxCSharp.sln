@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleBuild", "SockLynxCSharp\ConsoleBuild\ConsoleBuild.csproj", "{9272ADB9-EBC4-4B89-B8FA-56500B8EEE0E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SockLynxCSharp", "SockLynxCSharp", "{D672DBBB-723F-4C58-8315-7ACFF7792D50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SockLynx", "SockLynxCSharp\SockLynx\SockLynx.csproj", "{CAD3C893-E107-4123-BC9A-08CC4AA74249}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,20 @@ Global
 		{9272ADB9-EBC4-4B89-B8FA-56500B8EEE0E}.Release|x64.Build.0 = Release|Any CPU
 		{9272ADB9-EBC4-4B89-B8FA-56500B8EEE0E}.Release|x86.ActiveCfg = Release|Any CPU
 		{9272ADB9-EBC4-4B89-B8FA-56500B8EEE0E}.Release|x86.Build.0 = Release|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Debug|x64.Build.0 = Debug|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Debug|x86.Build.0 = Debug|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Release|x64.ActiveCfg = Release|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Release|x64.Build.0 = Release|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Release|x86.ActiveCfg = Release|Any CPU
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CAD3C893-E107-4123-BC9A-08CC4AA74249} = {D672DBBB-723F-4C58-8315-7ACFF7792D50}
 	EndGlobalSection
 EndGlobal

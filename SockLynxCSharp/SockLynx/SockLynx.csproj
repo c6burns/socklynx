@@ -4,14 +4,17 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <BuildInParallel>false</BuildInParallel>
     </PropertyGroup>
 
     <Import Project="SockLynx.Platform.targets" />
     <Import Project="SockLynx.DSO.targets" />
 
-    <Target Name="CMakeBuild" BeforeTargets="Build">
-    </Target>
+    <ItemGroup>
+        <ProjectReference Include="$(CsDir)ConsoleBuild\ConsoleBuild.csproj">
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+            <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+        </ProjectReference>
+    </ItemGroup>
 
     <ItemGroup>
         <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Scripts\*.cs" />
