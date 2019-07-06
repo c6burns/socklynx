@@ -14,7 +14,6 @@
         <CMakeVSArch Condition="'$(Configuration)' == 'x86'">-A WIN32</CMakeVSArch>
         <CMakeVSToolset>-T v141</CMakeVSToolset>
         <CMakeGenerator>$(CMakeVSArch) $(CMakeVSToolset)</CMakeGenerator>
-        <!--<CMakeGenerator Condition="'$(VisualStudioVersion)' == '16.0'">-G "Visual Studio 16 2019" -A $(CMakeWinArch) -T v141</CMakeGenerator>-->
     </PropertyGroup>
     <PropertyGroup Condition="'$(OSPlatformWindows)' != 'true'">
         <CMakeConfigBuildType>-DCMAKE_BUILD_TYPE=$(CMakeBuildType)</CMakeConfigBuildType>
