@@ -31,9 +31,9 @@ using System.Security;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-#if UNITY_EDITOR
-[assembly: InternalsVisibleTo("SockLynxTests")]
-#endif
+//#if UNITY_EDITOR
+//[assembly: InternalsVisibleTo("SockLynxTests")]
+//#endif
 
 namespace SL
 {
@@ -228,13 +228,13 @@ namespace SL
         [StructLayout(LayoutKind.Explicit, Size = SL_SOCK_SIZE)]
         public struct Socket
         {
-            [FieldOffset(0)] internal long fd;
-            [FieldOffset(8)] internal uint dir;
-            [FieldOffset(12)] internal SocketState state;
-            [FieldOffset(16)] internal uint type;
-            [FieldOffset(20)] internal uint proto;
-            [FieldOffset(24)] internal uint error;
-            [FieldOffset(28)] internal SocketFlags flags;
+            [FieldOffset(0)] public long fd;
+            [FieldOffset(8)] public uint dir;
+            [FieldOffset(12)] public SocketState state;
+            [FieldOffset(16)] public uint type;
+            [FieldOffset(20)] public uint proto;
+            [FieldOffset(24)] public uint error;
+            [FieldOffset(28)] public SocketFlags flags;
             [FieldOffset(32)] public Endpoint endpoint;
 
             [MethodImpl(Sys.SL_INLINE)]

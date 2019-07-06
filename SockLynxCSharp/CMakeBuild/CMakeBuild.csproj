@@ -7,13 +7,12 @@
         <EnableDefaultItems>false</EnableDefaultItems>
     </PropertyGroup>
 
-    <!--<Import Project="CoreSdkLocator.targets" />-->
-    
     <Import Project="BuildTasks.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
-    <!-- <Import Project="BuildLogger.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" /> -->
 
     <Target Name="ConsoleBanner" BeforeTargets="Build" Condition="'$(BuildingInsideVisualStudio)' != 'true'">
         <BannerTask TextFile="Banner.txt" />
     </Target>
+
+    <Import Project="CMakeBuild.targets" />
 
 </Project>

@@ -1,26 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <IsTestProject>true</IsTestProject>
-    <IsPackable>false</IsPackable>
-    <BuildInParallel>false</BuildInParallel>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <IsTestProject>true</IsTestProject>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
 
-  <Import Project="$(CsDir)SockLynx\SockLynx.Platform.targets" />
-  <Import Project="$(CsDir)SockLynx\SockLynx.DSO.targets" />
+    <Import Project="$(CsDir)Common\CMake.Content.props" />
 
-  <ItemGroup>
-    <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Scripts\*.cs" />
-    <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Tests\Editor\*.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="$(CsDir)SockLynx\SockLynx.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Tests\Editor\*.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NUnit" Version="3.12.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    </ItemGroup>
 
 </Project>

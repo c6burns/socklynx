@@ -6,11 +6,10 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
-    <Import Project="SockLynx.Platform.targets" />
-    <Import Project="SockLynx.DSO.targets" />
+    <Import Project="$(CsDir)Common\CMake.Content.props" />
 
     <ItemGroup>
-        <ProjectReference Include="$(CsDir)ConsoleBuild\ConsoleBuild.csproj">
+        <ProjectReference Include="$(CsDir)CMakeBuild\CMakeBuild.csproj">
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
             <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
         </ProjectReference>
