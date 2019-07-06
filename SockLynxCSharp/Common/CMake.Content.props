@@ -1,6 +1,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <PluginFullPath>$(PluginDir)$(PluginArchDir)$(PluginPrefix)$(PluginBaseName).$(PluginExt)</PluginFullPath>
+    </PropertyGroup>
+
     <ItemGroup>
-        <Content Condition="Exists('$(PluginDir)$(PluginArchDir)socklynxDSO.dll')" Include="$(PluginDir)$(PluginArchDir)socklynxDSO.dll">
+        <Content Condition="Exists('$(PluginFullPath)')" Include="$(PluginFullPath)">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
