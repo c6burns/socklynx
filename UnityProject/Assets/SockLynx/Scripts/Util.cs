@@ -26,92 +26,94 @@ namespace SL
 {
     public class Util
     {
+        const MethodImplOptions INLINE = MethodImplOptions.AggressiveInlining;
+
         /* these methods assume little endian */
         #region Endian Swapping
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static ushort HtoN(ushort input)
         {
             return (ushort)((input >> 8) + (input << 8));
         }
-        [MethodImpl(Sys.SL_INLINE)] public static short HtoN(short input) => (short)HtoN((ushort)input);
-        [MethodImpl(Sys.SL_INLINE)] public static ushort NtoH(ushort input) => HtoN(input);
-        [MethodImpl(Sys.SL_INLINE)] public static short NtoH(short input) => (short)HtoN((ushort)input);
+        [MethodImpl(INLINE)] public static short HtoN(short input) => (short)HtoN((ushort)input);
+        [MethodImpl(INLINE)] public static ushort NtoH(ushort input) => HtoN(input);
+        [MethodImpl(INLINE)] public static short NtoH(short input) => (short)HtoN((ushort)input);
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static uint HtoN(uint input)
         {
             uint num1 = input & 0x00FF00FFu;
             uint num2 = input & 0xFF00FF00u;
             return (num1 >> 8 | num1 << 24) + (num2 << 8 | num2 >> 24);
         }
-        [MethodImpl(Sys.SL_INLINE)] public static int HtoN(int input) => (int)HtoN((uint)input);
-        [MethodImpl(Sys.SL_INLINE)] public static uint NtoH(uint input) => HtoN(input);
-        [MethodImpl(Sys.SL_INLINE)] public static int NtoH(int input) => (int)HtoN((uint)input);
+        [MethodImpl(INLINE)] public static int HtoN(int input) => (int)HtoN((uint)input);
+        [MethodImpl(INLINE)] public static uint NtoH(uint input) => HtoN(input);
+        [MethodImpl(INLINE)] public static int NtoH(int input) => (int)HtoN((uint)input);
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static ulong HtoN(ulong input)
         {
             return ((ulong)HtoN((uint)input) << 32) + HtoN((uint)(input >> 32));
         }
-        [MethodImpl(Sys.SL_INLINE)] public static long HtoN(long input) => (long)HtoN((ulong)input);
-        [MethodImpl(Sys.SL_INLINE)] public static ulong NtoH(ulong input) => HtoN(input);
-        [MethodImpl(Sys.SL_INLINE)] public static long NtoH(long input) => (long)HtoN((ulong)input);
+        [MethodImpl(INLINE)] public static long HtoN(long input) => (long)HtoN((ulong)input);
+        [MethodImpl(INLINE)] public static ulong NtoH(ulong input) => HtoN(input);
+        [MethodImpl(INLINE)] public static long NtoH(long input) => (long)HtoN((ulong)input);
         #endregion
 
         #region Unsafe MemCpy / MemSet / MemCmp
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe void Copy1(byte* pdst, byte* psrc)
         {
             *pdst = *psrc;
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe void Copy2(byte* pdst, byte* psrc)
         {
             *(ushort*)pdst = *(ushort*)psrc;
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe void Copy3(byte* pdst, byte* psrc)
         {
             *(ushort*)(pdst + 0) = *(ushort*)(psrc + 0);
             *(ushort*)(pdst + 1) = *(ushort*)(psrc + 1);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe void Copy4(byte* pdst, byte* psrc)
         {
             *(uint*)pdst = *(uint*)psrc;
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe void Copy5(byte* pdst, byte* psrc)
         {
             *(uint*)(pdst + 0) = *(uint*)(psrc + 0);
             *(uint*)(pdst + 1) = *(uint*)(psrc + 1);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe void Copy6(byte* pdst, byte* psrc)
         {
             *(uint*)(pdst + 0) = *(uint*)(psrc + 0);
             *(uint*)(pdst + 2) = *(uint*)(psrc + 2);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe void Copy7(byte* pdst, byte* psrc)
         {
             *(uint*)(pdst + 0) = *(uint*)(psrc + 0);
             *(uint*)(pdst + 3) = *(uint*)(psrc + 3);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe void Copy8(byte* pdst, byte* psrc)
         {
             *(ulong*)pdst = *(ulong*)psrc;
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static unsafe void MemCpy(byte* dst, int dstOffset, byte* src, int srcOffset, int byteLength)
         {
             byte* psrc = src + srcOffset;
@@ -152,7 +154,7 @@ namespace SL
             }
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static unsafe void MemSet(byte* dst, int dstOffset, ulong ulongValue, int byteLength)
         {
             byte *pdst = dst + dstOffset;
@@ -192,7 +194,7 @@ namespace SL
             }
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static unsafe void MemSet(byte* dst, int dstOffset, byte byteValue, int byteLength)
         {
             ulong ulval = (ulong)byteValue;
@@ -200,7 +202,7 @@ namespace SL
             MemSet(dst, dstOffset, ulongValue, byteLength);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static unsafe void MemSet(byte* dst, int dstOffset, short shortValue, int byteLength)
         {
             ulong ulval = (ulong)shortValue;
@@ -208,7 +210,7 @@ namespace SL
             MemSet(dst, dstOffset, ulongValue, byteLength);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static unsafe void MemSet(byte* dst, int dstOffset, int intValue, int byteLength)
         {
             ulong ulval = (ulong)intValue;
@@ -216,55 +218,55 @@ namespace SL
             MemSet(dst, dstOffset, ulongValue, byteLength);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe bool Cmp1(byte* pdst, byte* psrc)
         {
             return (*pdst == *psrc);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe bool Cmp2(byte* pdst, byte* psrc)
         {
             return (*(ushort*)pdst == *(ushort*)psrc);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe bool Cmp3(byte* pdst, byte* psrc)
         {
             return (*(ushort*)(pdst + 0) == *(ushort*)(psrc + 0)) && (*(ushort*)(pdst + 1) == *(ushort*)(psrc + 1));
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe bool Cmp4(byte* pdst, byte* psrc)
         {
             return (*(uint*)pdst == *(uint*)psrc);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe bool Cmp5(byte* pdst, byte* psrc)
         {
             return (*(uint*)(pdst + 0) == *(uint*)(psrc + 0)) && (*(uint*)(pdst + 1) == *(uint*)(psrc + 1));
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe bool Cmp6(byte* pdst, byte* psrc)
         {
             return (*(uint*)(pdst + 0) == *(uint*)(psrc + 0)) && (*(uint*)(pdst + 2) == *(uint*)(psrc + 2));
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe bool Cmp7(byte* pdst, byte* psrc)
         {
             return (*(uint*)(pdst + 0) == *(uint*)(psrc + 0)) && (*(uint*)(pdst + 3) == *(uint*)(psrc + 3));
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         private static unsafe bool Cmp8(byte* pdst, byte* psrc)
         {
             return (*(ulong*)pdst == *(ulong*)psrc);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static unsafe bool MemCmp(byte* dst, int dstOffset, byte* src, int srcOffset, int byteLength)
         {
             byte* psrc = src + srcOffset;

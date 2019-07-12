@@ -6,15 +6,20 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <IsTestProject>true</IsTestProject>
         <IsPackable>false</IsPackable>
+        <DefineConstants>$(DefineConstants);SL_TESTING_ENABLED</DefineConstants>
     </PropertyGroup>
 
     <Import Project="$(CsDir)Common\CMake.Content.props" />
 
     <ItemGroup>
-        <ProjectReference Include="$(CsDir)SockLynx\SockLynx.csproj" />
+        <ProjectReference Include="$(CsDir)SockLynx\SockLynx.csproj">
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+            <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+        </ProjectReference>
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Scripts\*.cs" />
         <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Tests\Editor\*.cs" />
     </ItemGroup>
 

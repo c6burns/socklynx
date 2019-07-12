@@ -20,56 +20,97 @@
  * SOFTWARE.
  */
 
+using System;
+using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+
+#if UNITY_EDITOR || SL_TESTING_ENABLED
+[assembly: InternalsVisibleTo("SockLynxTests")]
+#endif
 
 namespace SL
 {
-    public static unsafe class Sys
+    sealed public unsafe class API : IDisposable
     {
-        public const MethodImplOptions SL_INLINE = MethodImplOptions.AggressiveInlining;
+        const MethodImplOptions INLINE = MethodImplOptions.AggressiveInlining;
 
-        [MethodImpl(Sys.SL_INLINE)]
-        public static bool Setup(C.Context* ctx)
+        internal bool _disposed = false;
+        internal IntPtr _ctxHandle = IntPtr.Zero;
+        public readonly C.Context* _ctx = null;
+
+        public API()
         {
-            return (C.socklynx_setup(ctx) == C.SL_OK);
+            _ctxHandle = Marshal.AllocHGlobal(sizeof(C.Context));
+            _ctx = (C.Context*)_ctxHandle.ToPointer();
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
-        public static bool Cleanup(C.Context* ctx)
+        public API(C.Context* ctxPtr)
         {
-            return (C.socklynx_cleanup(ctx) == C.SL_OK);
+            _ctx = ctxPtr;
         }
-    }
 
-    public static unsafe class UDP
-    {
-        
+        ~API()
+        {
+            Dispose(false);
+        }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                _disposed = true;
+                Marshal.FreeHGlobal(_ctxHandle);
+                _ctxHandle = IntPtr.Zero;
+
+                if (disposing)
+                {
+                    GC.SuppressFinalize(this);
+                }
+            }
+        }
+
+        [MethodImpl(INLINE)]
+        public bool Setup()
+        {
+            return (C.socklynx_setup(_ctx) == C.SL_OK);
+        }
+
+        [MethodImpl(INLINE)]
+        public bool Cleanup()
+        {
+            return (C.socklynx_cleanup(_ctx) == C.SL_OK);
+        }
+
+        [MethodImpl(INLINE)]
         public static bool SocketOpen(C.Socket* sock)
         {
             return (C.socklynx_socket_open(sock) == C.SL_OK);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static bool SocketClose(C.Socket* sock)
         {
             return (C.socklynx_socket_close(sock) == C.SL_OK);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static bool SocketNonBlocking(C.Socket* sock, bool enabled)
         {
             return (C.socklynx_socket_nonblocking(sock, enabled ? 1 : 0) == C.SL_OK);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static int SocketSend(C.Socket* sock, C.Buffer* bufferArray, int bufferCount, C.Endpoint* endpoint)
         {
             return C.socklynx_socket_send(sock, bufferArray, bufferCount, endpoint);
         }
 
-        [MethodImpl(Sys.SL_INLINE)]
+        [MethodImpl(INLINE)]
         public static int SocketRecv(C.Socket* sock, C.Buffer* bufferArray, int bufferCount, C.Endpoint* endpoint)
         {
             return C.socklynx_socket_recv(sock, bufferArray, bufferCount, endpoint);
