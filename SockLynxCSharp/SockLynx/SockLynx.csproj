@@ -6,6 +6,11 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
+    <Target Name="TestTarg" BeforeTargets="Build">
+        <Message Text="SockLynxTests -- DefineConstants: $(DefineConstants)" Importance="high" />
+        <Message Text="SockLynx -- MSBuildProjectDefaultTargets: $(MSBuildProjectDefaultTargets)" Importance="high" />
+    </Target>
+
     <Import Project="$(CsDir)Common\CMake.Content.props" />
 
     <ItemGroup>

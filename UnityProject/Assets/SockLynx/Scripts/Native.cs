@@ -48,14 +48,15 @@ namespace SL
         public const int SL_IP6_SIZE = 16;
         public const int SL_ENDPOINT4_SIZE = 16;
         public const int SL_ENDPOINT6_SIZE = 28;
+        public const int SL_SOCK_SIZE_UNALIGNED_BASE = 32;
 #if SL_IPV6_ENABLED
         public const int SL_ENDPOINT_SIZE = SL_ENDPOINT6_SIZE;
-        internal const int SL_SOCK_SIZE_UNALIGNED = 32 + SL_ENDPOINT_SIZE;
+        public const int SL_SOCK_SIZE_UNALIGNED = SL_SOCK_SIZE_UNALIGNED_BASE + SL_ENDPOINT_SIZE;
         public const int SL_SOCK_SIZE = (SL_SOCK_SIZE_UNALIGNED & ~(sizeof(ulong) - 1)) + sizeof(ulong);
         public const bool SL_IPV6_ENABLED = true;
 #else
         public const int SL_ENDPOINT_SIZE = SL_ENDPOINT4_SIZE;
-        public const int SL_SOCK_SIZE = 32 + SL_ENDPOINT_SIZE;
+        public const int SL_SOCK_SIZE = SL_SOCK_SIZE_UNALIGNED_BASE + SL_ENDPOINT_SIZE;
         public const bool SL_IPV6_ENABLED = false;
 #endif
 
@@ -196,8 +197,6 @@ namespace SL
             }
 
 #if SL_IPV6_ENABLED
-            
-
             [MethodImpl(INLINE)]
             public static Endpoint NewV6(Context* ctx, ushort port = 0, IPv6 addr6 = default, uint flowinfo = 0, uint scope_id = 0)
             {
@@ -217,7 +216,6 @@ namespace SL
             }
 #endif
         }
-
 
         public enum SocketFlags : uint
         {

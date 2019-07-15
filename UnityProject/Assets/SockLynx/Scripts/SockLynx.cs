@@ -30,60 +30,20 @@ using System.Runtime.CompilerServices;
 
 namespace SL
 {
-    sealed public unsafe class API : IDisposable
+    public unsafe static class API
     {
         const MethodImplOptions INLINE = MethodImplOptions.AggressiveInlining;
 
-        internal bool _disposed = false;
-        internal IntPtr _ctxHandle = IntPtr.Zero;
-        public readonly C.Context* _ctx = null;
-
-        public API()
+        [MethodImpl(INLINE)]
+        public static bool Setup(C.Context* ctx)
         {
-            _ctxHandle = Marshal.AllocHGlobal(sizeof(C.Context));
-            _ctx = (C.Context*)_ctxHandle.ToPointer();
-        }
-
-        public API(C.Context* ctxPtr)
-        {
-            _ctx = ctxPtr;
-        }
-
-        ~API()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
-                Marshal.FreeHGlobal(_ctxHandle);
-                _ctxHandle = IntPtr.Zero;
-
-                if (disposing)
-                {
-                    GC.SuppressFinalize(this);
-                }
-            }
+            return (C.socklynx_setup(ctx) == C.SL_OK);
         }
 
         [MethodImpl(INLINE)]
-        public bool Setup()
+        public static bool Cleanup(C.Context* ctx)
         {
-            return (C.socklynx_setup(_ctx) == C.SL_OK);
-        }
-
-        [MethodImpl(INLINE)]
-        public bool Cleanup()
-        {
-            return (C.socklynx_cleanup(_ctx) == C.SL_OK);
+            return (C.socklynx_cleanup(ctx) == C.SL_OK);
         }
 
         [MethodImpl(INLINE)]

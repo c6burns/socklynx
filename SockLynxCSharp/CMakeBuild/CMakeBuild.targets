@@ -26,20 +26,20 @@
         <OnError ExecuteTargets="CMakeCleanFailed" />
     </Target>
 
-    <Target Name="CMakeConfigTarget" BeforeTargets="Build">
+    <Target Name="CMakeConfigTarget" BeforeTargets="Build;VSTest">
         <Message Text="CMake -- configuring $(CMakeBuildType) $(Platform): $(CMakeProjName)" Importance="high" />
         <MakeDir Directories="$(CMakeBinaryDir)" />
         <Exec Command="cmake $(CMakeGenerator) $(CMakeConfigBuildType) .." WorkingDirectory="$(CMakeBinaryDir)" StandardOutputImportance="low" StandardErrorImportance="high" />
         <OnError ExecuteTargets="CMakeBuildFailed" />
     </Target>
 
-    <Target Name="CMakeBuildTarget" BeforeTargets="Build">
+    <Target Name="CMakeBuildTarget" BeforeTargets="Build;VSTest">
         <Message Text="CMake -- building project: $(CMakeProjName)" Importance="high" />
         <Exec Command="cmake --build . --config $(CMakeBuildType)" WorkingDirectory="$(CMakeBinaryDir)" StandardOutputImportance="low" StandardErrorImportance="high" />
         <OnError ExecuteTargets="CMakeBuildFailed" />
     </Target>
 
-    <Target Name="CMakeBuildSuccess" BeforeTargets="Build">
+    <Target Name="CMakeBuildSuccess" BeforeTargets="Build;VSTest">
         <Message Text="CMake -- build succeeded: $(CMakeProjName)" Importance="high" />
     </Target>
 

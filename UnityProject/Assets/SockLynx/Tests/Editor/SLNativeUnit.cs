@@ -58,97 +58,85 @@ namespace SL
         [Test]
         public void UDP_Setup()
         {
-            using (SL.API _api = new API())
-            {
-                Assert.True(_api.Setup());
-                Assert.AreEqual(C.ContextState.Started, _api._ctx->state);
-                Assert.AreNotEqual(0, _api._ctx->af_inet);
-                Assert.AreNotEqual(0, _api._ctx->af_inet6);
+            SL.C.Context ctx = default;
+            Assert.True(API.Setup(&ctx));
+            Assert.AreEqual(C.ContextState.Started, ctx.state);
+            Assert.AreNotEqual(0, ctx.af_inet);
+            Assert.AreNotEqual(0, ctx.af_inet6);
 
-                Assert.True(_api.Cleanup());
-                Assert.AreEqual(C.ContextState.Stopped, _api._ctx->state);
-            }
+            Assert.True(API.Cleanup(&ctx));
+            Assert.AreEqual(C.ContextState.Stopped, ctx.state);
         }
 
         [Test]
         public void UDP_DoubleSetup()
         {
-            using (SL.API _api = new API())
-            {
-                Assert.True(_api.Setup());
-                Assert.AreEqual(C.ContextState.Started, _api._ctx->state);
-                Assert.AreNotEqual(0, _api._ctx->af_inet);
-                Assert.AreNotEqual(0, _api._ctx->af_inet6);
+            SL.C.Context ctx = default;
+            Assert.True(API.Setup(&ctx));
+            Assert.AreEqual(C.ContextState.Started, ctx.state);
+            Assert.AreNotEqual(0, ctx.af_inet);
+            Assert.AreNotEqual(0, ctx.af_inet6);
 
-                Assert.True(_api.Setup());
-                Assert.AreEqual(C.ContextState.Started, _api._ctx->state);
-                Assert.AreNotEqual(0, _api._ctx->af_inet);
-                Assert.AreNotEqual(0, _api._ctx->af_inet6);
+            Assert.True(API.Setup(&ctx));
+            Assert.AreEqual(C.ContextState.Started, ctx.state);
+            Assert.AreNotEqual(0, ctx.af_inet);
+            Assert.AreNotEqual(0, ctx.af_inet6);
 
-                Assert.True(_api.Cleanup());
-                Assert.AreEqual(C.ContextState.Stopped, _api._ctx->state);
-            }
+            Assert.True(API.Cleanup(&ctx));
+            Assert.AreEqual(C.ContextState.Stopped, ctx.state);
         }
 
         [Test]
         public void UDP_Cleanup()
         {
-            using (SL.API _api = new API())
-            {
-                Assert.True(_api.Cleanup());
-                Assert.AreEqual(C.ContextState.Stopped, _api._ctx->state);
-            }
+            SL.C.Context ctx = default;
+            Assert.True(API.Cleanup(&ctx));
+            Assert.AreEqual(C.ContextState.Stopped, ctx.state);
         }
 
         [Test]
         public void UDP_DoubleCleanup()
         {
-            using (SL.API _api = new API())
-            {
-                Assert.True(_api.Cleanup());
-                Assert.AreEqual(C.ContextState.Stopped, _api._ctx->state);
+            SL.C.Context ctx = default;
+            Assert.True(API.Cleanup(&ctx));
+            Assert.AreEqual(C.ContextState.Stopped, ctx.state);
 
-                Assert.True(_api.Cleanup());
-                Assert.AreEqual(C.ContextState.Stopped, _api._ctx->state);
-            }
+            Assert.True(API.Cleanup(&ctx));
+            Assert.AreEqual(C.ContextState.Stopped, ctx.state);
         }
 
         [Test]
         public void UDP_SetupCleanup()
         {
-            using (SL.API _api = new API())
-            {
-                Assert.True(_api.Setup());
-                Assert.AreEqual(C.ContextState.Started, _api._ctx->state);
-                Assert.AreNotEqual(0, _api._ctx->af_inet);
-                Assert.AreNotEqual(0, _api._ctx->af_inet6);
+            SL.C.Context ctx = default;
+            Assert.True(API.Setup(&ctx));
+            Assert.AreEqual(C.ContextState.Started, ctx.state);
+            Assert.AreNotEqual(0, ctx.af_inet);
+            Assert.AreNotEqual(0, ctx.af_inet6);
 
-                Assert.True(_api.Cleanup());
-                Assert.AreEqual(C.ContextState.Stopped, _api._ctx->state);
-            }
+            Assert.True(API.Cleanup(&ctx));
+            Assert.AreEqual(C.ContextState.Stopped, ctx.state);
         }
 
         [Test]
         public void UDP_DoubleSetupCleanup()
         {
-            using (SL.API _api = new API())
-            {
-                Assert.True(_api.Setup());
-                Assert.AreEqual(C.ContextState.Started, _api._ctx->state);
-                Assert.AreNotEqual(0, _api._ctx->af_inet);
-                Assert.AreNotEqual(0, _api._ctx->af_inet6);
+            SL.C.Context ctx = default;
+            Assert.True(API.Setup(&ctx));
+            Assert.AreEqual(C.ContextState.Started, ctx.state);
+            Assert.AreNotEqual(0, ctx.af_inet);
+            Assert.AreNotEqual(0, ctx.af_inet6);
 
-                Assert.True(_api.Setup());
-                Assert.AreEqual(C.ContextState.Started, _api._ctx->state);
-                Assert.AreNotEqual(0, _api._ctx->af_inet);
-                Assert.AreNotEqual(0, _api._ctx->af_inet6);
+            Assert.True(API.Setup(&ctx));
+            Assert.AreEqual(C.ContextState.Started, ctx.state);
+            Assert.AreNotEqual(0, ctx.af_inet);
+            Assert.AreNotEqual(0, ctx.af_inet6);
 
-                Assert.True(_api.Cleanup());
-                Assert.AreEqual(C.ContextState.Stopped, _api._ctx->state);
+            Assert.True(API.Cleanup(&ctx));
+            Assert.AreEqual(C.ContextState.Stopped, ctx.state);
 
-                Assert.True(_api.Cleanup());
-                Assert.AreEqual(C.ContextState.Stopped, _api._ctx->state);
-            }
+            Assert.True(API.Cleanup(&ctx));
+            Assert.AreEqual(C.ContextState.Stopped, ctx.state);
         }
 
         [Test]
@@ -156,25 +144,23 @@ namespace SL
         {
             Assert.True(IPAddress.TryParse("127.0.0.1", out IPAddress netip));
 
-            using (SL.API _api = new API())
+            SL.C.Context ctx = default;
+            Assert.True(API.Setup(&ctx));
+
+            try
             {
-                Assert.True(_api.Setup());
+                C.Endpoint endpoint = C.Endpoint.NewV4(&ctx, _port, C.IPv4.New(127, 0, 0, 1));
+                Assert.AreEqual(ctx.af_inet, endpoint.af);
+                Assert.AreEqual(_port, endpoint.port);
 
-                try
-                {
-                    C.Endpoint endpoint = C.Endpoint.NewV4(_api._ctx, _port, C.IPv4.New(127, 0, 0, 1));
-                    Assert.AreEqual(_api._ctx->af_inet, endpoint.af);
-                    Assert.AreEqual(_port, endpoint.port);
+                fixed (byte* pnetip = netip.GetAddressBytes())
+                    Assert.True(Util.MemCmp((byte*)&endpoint.addr4, 0, pnetip, 0, sizeof(C.IPv4)));
 
-                    fixed (byte* pnetip = netip.GetAddressBytes())
-                        Assert.True(Util.MemCmp((byte*)&endpoint.addr4, 0, pnetip, 0, sizeof(C.IPv4)));
-
-                    Assert.True(_api.Cleanup());
-                }
-                finally
-                {
-                    _api.Cleanup();
-                }
+                Assert.True(API.Cleanup(&ctx));
+            }
+            finally
+            {
+                API.Cleanup(&ctx);
             }
         }
 
@@ -185,24 +171,22 @@ namespace SL
 
             Assert.True(IPAddress.TryParse("fe80::300e:5130:704b:a647%21", out IPAddress netip));
 
-            using (SL.API _api = new API())
+            SL.C.Context ctx = default;
+            Assert.True(API.Setup(&ctx));
+            try
             {
-                Assert.True(_api.Setup());
-                try
-                {
-                    C.Endpoint endpoint = C.Endpoint.NewV6(_api._ctx, _port, C.IPv6.New(0xfe80, 0, 0, 0, 0x300e, 0x5130, 0x704b, 0xa647));
-                    Assert.AreEqual(_api._ctx->af_inet6, endpoint.af);
-                    Assert.AreEqual(_port, endpoint.port);
+                C.Endpoint endpoint = C.Endpoint.NewV6(&ctx, _port, C.IPv6.New(0xfe80, 0, 0, 0, 0x300e, 0x5130, 0x704b, 0xa647));
+                Assert.AreEqual(ctx.af_inet6, endpoint.af);
+                Assert.AreEqual(_port, endpoint.port);
 
-                    fixed (byte* pnetip = netip.GetAddressBytes())
-                        Assert.True(Util.MemCmp((byte*)&endpoint.addr6, 0, pnetip, 0, C.SL_IP6_SIZE));
+                fixed (byte* pnetip = netip.GetAddressBytes())
+                    Assert.True(Util.MemCmp((byte*)&endpoint.addr6, 0, pnetip, 0, C.SL_IP6_SIZE));
 
-                    Assert.True(_api.Cleanup());
-                }
-                finally
-                {
-                    _api.Cleanup();
-                }
+                Assert.True(API.Cleanup(&ctx));
+            }
+            finally
+            {
+                API.Cleanup(&ctx);
             }
         }
 
@@ -211,87 +195,81 @@ namespace SL
         {
             Assert.True(IPAddress.TryParse("127.0.0.1", out IPAddress netip));
 
-            using (SL.API _api = new API())
+            SL.C.Context ctx = default;
+            Assert.True(API.Setup(&ctx));
+
+            try
             {
-                Assert.True(_api.Setup());
+                C.Socket sock = C.Socket.NewUDP(&ctx, C.Endpoint.NewV4(&ctx, _port, C.IPv4.New(127, 0, 0, 1)));
+                Assert.AreEqual(0, sock.fd);
+                Assert.AreEqual(0, sock.dir);
+                Assert.AreEqual(C.SocketState.New, sock.state);
+                Assert.AreEqual(C.SockType.Dgram, (C.SockType)sock.type);
+                Assert.AreEqual(C.SockProto.UDP, (C.SockProto)sock.proto);
+                Assert.AreEqual(0, sock.error);
+                Assert.AreEqual(C.SocketFlags.None, sock.flags);
+                Assert.AreEqual(ctx.af_inet, sock.endpoint.af);
+                Assert.AreEqual(_port, sock.endpoint.port);
 
-                try
-                {
-                    C.Socket sock = C.Socket.NewUDP(_api._ctx, C.Endpoint.NewV4(_api._ctx, _port, C.IPv4.New(127, 0, 0, 1)));
-                    Assert.AreEqual(0, sock.fd);
-                    Assert.AreEqual(0, sock.dir);
-                    Assert.AreEqual(C.SocketState.New, sock.state);
-                    Assert.AreEqual(C.SockType.Dgram, (C.SockType)sock.type);
-                    Assert.AreEqual(C.SockProto.UDP, (C.SockProto)sock.proto);
-                    Assert.AreEqual(0, sock.error);
-                    Assert.AreEqual(C.SocketFlags.None, sock.flags);
-                    Assert.AreEqual(_api._ctx->af_inet, sock.endpoint.af);
-                    Assert.AreEqual(_port, sock.endpoint.port);
+                fixed (byte* pnetip = netip.GetAddressBytes())
+                    Assert.True(Util.MemCmp((byte*)&sock.endpoint.addr4, 0, pnetip, 0, sizeof(C.IPv4)));
 
-                    fixed (byte* pnetip = netip.GetAddressBytes())
-                        Assert.True(Util.MemCmp((byte*)&sock.endpoint.addr4, 0, pnetip, 0, sizeof(C.IPv4)));
-
-                    Assert.True(_api.Cleanup());
-                }
-                finally
-                {
-                    _api.Cleanup();
-                }
+                Assert.True(API.Cleanup(&ctx));
+            }
+            finally
+            {
+                API.Cleanup(&ctx);
             }
         }
 
         [Test]
         public void UDP_SocketOpenClose()
         {
-            using (SL.API _api = new API())
+            SL.C.Context ctx = default;
+            Assert.True(API.Setup(&ctx));
+
+            C.Socket sock = C.Socket.NewUDP(&ctx, C.Endpoint.NewV4(&ctx, _port));
+            try
             {
-                Assert.True(_api.Setup());
+                Assert.True(API.SocketOpen(&sock));
+                Assert.AreEqual(C.SocketState.Bound, sock.state);
+                Assert.AreEqual(C.SocketFlags.None, sock.flags);
+                Assert.AreEqual(0, sock.error);
+                Assert.False(C.Socket.HasFlag(&sock, C.SocketFlags.NonBlocking));
 
-                C.Socket sock = C.Socket.NewUDP(_api._ctx, C.Endpoint.NewV4(_api._ctx, _port));
-                try
-                {
-                    Assert.True(API.SocketOpen(&sock));
-                    Assert.AreEqual(C.SocketState.Bound, sock.state);
-                    Assert.AreEqual(C.SocketFlags.None, sock.flags);
-                    Assert.AreEqual(0, sock.error);
-                    Assert.False(C.Socket.HasFlag(&sock, C.SocketFlags.NonBlocking));
+                Assert.True(API.SocketClose(&sock));
+                Assert.AreEqual(C.SocketState.Closed, sock.state);
+                Assert.AreEqual(0, sock.fd);
 
-                    Assert.True(API.SocketClose(&sock));
-                    Assert.AreEqual(C.SocketState.Closed, sock.state);
-                    Assert.AreEqual(0, sock.fd);
-
-                    Assert.True(_api.Cleanup());
-                    Assert.AreEqual(C.ContextState.Stopped, _api._ctx->state);
-                }
-                finally
-                {
-                    _api.Cleanup();
-                }
+                Assert.True(API.Cleanup(&ctx));
+                Assert.AreEqual(C.ContextState.Stopped, ctx.state);
+            }
+            finally
+            {
+                API.Cleanup(&ctx);
             }
         }
 
         [Test]
         public void UDP_SocketSetBlocking()
         {
-            using (SL.API _api = new API())
+            SL.C.Context ctx = default;
+            Assert.True(API.Setup(&ctx));
+
+            C.Socket sock = C.Socket.NewUDP(&ctx, C.Endpoint.NewV4(&ctx, _port));
+            try
             {
-                Assert.True(_api.Setup());
+                Assert.True(API.SocketOpen(&sock));
+                Assert.True(API.SocketNonBlocking(&sock, true));
+                Assert.True(C.Socket.HasFlag(&sock, C.SocketFlags.NonBlocking));
 
-                C.Socket sock = C.Socket.NewUDP(_api._ctx, C.Endpoint.NewV4(_api._ctx, _port));
-                try
-                {
-                    Assert.True(API.SocketOpen(&sock));
-                    Assert.True(API.SocketNonBlocking(&sock, true));
-                    Assert.True(C.Socket.HasFlag(&sock, C.SocketFlags.NonBlocking));
-
-                    Assert.True(API.SocketClose(&sock));
-                    Assert.True(_api.Cleanup());
-                }
-                finally
-                {
-                    API.SocketClose(&sock);
-                    _api.Cleanup();
-                }
+                Assert.True(API.SocketClose(&sock));
+                Assert.True(API.Cleanup(&ctx));
+            }
+            finally
+            {
+                API.SocketClose(&sock);
+                API.Cleanup(&ctx);
             }
         }
     }

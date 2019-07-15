@@ -9,17 +9,26 @@
         <DefineConstants>$(DefineConstants);SL_TESTING_ENABLED</DefineConstants>
     </PropertyGroup>
 
+    <Target Name="TestTarg" BeforeTargets="Build">
+        <Message Text="SockLynxTests -- DefineConstants: $(DefineConstants)" Importance="high" />
+        <Message Text="SockLynxTests -- MSBuildProjectDefaultTargets: $(MSBuildProjectDefaultTargets)" Importance="high" />
+    </Target>
+
     <Import Project="$(CsDir)Common\CMake.Content.props" />
 
     <ItemGroup>
         <ProjectReference Include="$(CsDir)SockLynx\SockLynx.csproj">
+            <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+            <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+        </ProjectReference>
+        <ProjectReference Include="$(CsDir)CMakeBuild\CMakeBuild.csproj">
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
             <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
         </ProjectReference>
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Scripts\*.cs" />
+        <!-- <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Scripts\*.cs" /> -->
         <Compile Include="$(SlnDir)UnityProject\Assets\SockLynx\Tests\Editor\*.cs" />
     </ItemGroup>
 
