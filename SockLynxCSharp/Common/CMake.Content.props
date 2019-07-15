@@ -12,10 +12,6 @@
         </ItemGroup> -->
 
         <Copy SourceFiles="$(PluginFullPath)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
-        <!-- <Message Text="CMakeContentCopy - FOUND - OutputPath: $(OutputPath)" Importance="high" /> -->
-
-        <!-- <Message Text="CMakeContentCopy - FOUND - PluginFullPath: $(PluginFullPath)" Importance="high" Condition="Exists('$(PluginFullPath)')" /> -->
-        <!-- <Message Text="CMakeContentCopy - NOTFOUND - PluginFullPath: $(PluginFullPath)" Importance="high" Condition="!Exists('$(PluginFullPath)')" /> -->
     </Target>
 
 </Project>

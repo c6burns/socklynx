@@ -9,11 +9,6 @@
         <DefineConstants>$(DefineConstants);SL_TESTING_ENABLED</DefineConstants>
     </PropertyGroup>
 
-    <Target Name="TestTarg" BeforeTargets="Build">
-        <Message Text="SockLynxTests -- DefineConstants: $(DefineConstants)" Importance="high" />
-        <Message Text="SockLynxTests -- MSBuildProjectDefaultTargets: $(MSBuildProjectDefaultTargets)" Importance="high" />
-    </Target>
-
     <Import Project="$(CsDir)Common\CMake.Content.props" />
 
     <ItemGroup>
