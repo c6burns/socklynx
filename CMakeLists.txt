@@ -64,6 +64,17 @@ if(NOT APPLE)
 	)
 else()
 	set_target_properties(socklynxDSO PROPERTIES BUNDLE TRUE)
+	
+	# copy dylib for .net core
+	add_custom_command(
+		TARGET socklynxDSO
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+			$<TARGET_FILE:socklynxDSO>
+			${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynxDSO>.dylib
+	)
+
+	# copy bundle for unity
 	add_custom_command(
 		TARGET socklynxDSO
 		POST_BUILD
