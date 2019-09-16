@@ -34,10 +34,12 @@
 #if SL_SOCK_API_WINSOCK
 #    include <winsock2.h>
 #    include <ws2ipdef.h>
+#    define SL_SOCK_TYPE SOCKET
 #else
 #    include <fcntl.h>
 #    include <sys/socket.h>
 #    include <unistd.h>
+#    define SL_SOCK_TYPE int
 #endif
 
 typedef enum sl_sock_state_e {
@@ -88,6 +90,12 @@ SL_INLINE_IMPL void sl_sock_error_set(sl_sock_t *sock, uint32_t error)
 {
     SL_ASSERT(sock);
     sock->error = error;
+}
+
+SL_INLINE_IMPL SL_SOCK_TYPE sl_sock_fd_get(sl_sock_t *sock)
+{
+    SL_ASSERT(sock);
+    return (SL_SOCK_TYPE)sock->fd;
 }
 
 SL_INLINE_IMPL int sl_sock_fd_set(sl_sock_t *sock, int64_t sockfd)
@@ -162,7 +170,7 @@ SL_INLINE_IMPL int sl_sock_create(sl_sock_t *sock, sl_sock_type_t type, sl_sock_
     SL_GUARD(sl_sock_fd_set(sock, socket(sl_endpoint_af_get(&sock->endpoint), type, proto)));
     if (sl_endpoint_is_ipv6(&sock->endpoint)) {
         int optval = 0;
-        SL_GUARD(setsockopt(sock->fd, IPPROTO_IPV6, IPV6_V6ONLY, (const char *)&optval, sizeof(optval)));
+        SL_GUARD(setsockopt(sl_sock_fd_get(sock), IPPROTO_IPV6, IPV6_V6ONLY, (const char *)&optval, sizeof(optval)));
         sl_sock_flags_set(sock, SL_SOCK_FLAG_IPV4_DISABLED);
     }
     sl_sock_state_set(sock, SL_SOCK_STATE_CREATED);
@@ -175,9 +183,9 @@ SL_INLINE_IMPL int sl_sock_close(sl_sock_t *sock)
     SL_ASSERT(sock);
 
 #if SL_SOCK_API_WINSOCK
-    if (closesocket((SOCKET)sock->fd)) {
+    if (closesocket(sl_sock_fd_get(sock))) {
 #else
-    if (close((int)sock->fd)) {
+    if (close(sl_sock_fd_get(sock))) {
 #endif
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
@@ -195,9 +203,9 @@ SL_INLINE_IMPL int sl_sock_bind(sl_sock_t *sock)
     SL_ASSERT(sock->state == SL_SOCK_STATE_CREATED);
 
 #if SL_SOCK_API_WINSOCK
-    if (bind((SOCKET)sock->fd, sl_endpoint_addr_get(&sock->endpoint), sl_endpoint_size(&sock->endpoint))) {
+    if (bind(sl_sock_fd_get(sock), sl_endpoint_addr_get(&sock->endpoint), sl_endpoint_size(&sock->endpoint))) {
 #else
-    if (bind((int)sock->fd, sl_endpoint_addr_get(&sock->endpoint), (socklen_t)sl_endpoint_size(&sock->endpoint))) {
+    if (bind(sl_sock_fd_get(sock), sl_endpoint_addr_get(&sock->endpoint), (socklen_t)sl_endpoint_size(&sock->endpoint))) {
 #endif
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
@@ -213,9 +221,9 @@ SL_INLINE_IMPL int sl_sock_blocking_set(sl_sock_t *sock)
 
 #if SL_SOCK_API_WINSOCK
     uint32_t argp = 0;
-    if (ioctlsocket((SOCKET)sock->fd, FIONBIO, &argp)) {
+    if (ioctlsocket(sl_sock_fd_get(sock), FIONBIO, &argp)) {
 #else
-    if (fcntl((int)sock->fd, F_SETFL, ~O_NONBLOCK & fcntl((int)sock->fd, F_GETFL, 0))) {
+    if (fcntl(sl_sock_fd_get(sock), F_SETFL, ~O_NONBLOCK & fcntl(sl_sock_fd_get(sock), F_GETFL, 0))) {
 #endif
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
@@ -231,9 +239,9 @@ SL_INLINE_IMPL int sl_sock_nonblocking_set(sl_sock_t *sock)
 
 #if SL_SOCK_API_WINSOCK
     uint32_t argp = 1;
-    if (ioctlsocket((SOCKET)sock->fd, FIONBIO, &argp)) {
+    if (ioctlsocket(sl_sock_fd_get(sock), FIONBIO, &argp)) {
 #else
-    if (fcntl((int)sock->fd, F_SETFL, O_NONBLOCK | fcntl((int)sock->fd, F_GETFL, 0))) {
+    if (fcntl(sl_sock_fd_get(sock), F_SETFL, O_NONBLOCK | fcntl(sl_sock_fd_get(sock), F_GETFL, 0))) {
 #endif
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
@@ -254,7 +262,7 @@ SL_INLINE_IMPL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
     struct sockaddr *sa = sl_endpoint_addr_get(endpoint);
     const int sa_len = sl_endpoint_size(endpoint);
 #if SL_SOCK_API_WINSOCK
-    if (WSASendTo((SOCKET)sock->fd, (LPWSABUF)buf, (DWORD)bufcount, (LPDWORD)&bytes_sent, 0, sa, sa_len, NULL, NULL))
+    if (WSASendTo(sl_sock_fd_get(sock), (LPWSABUF)buf, (DWORD)bufcount, (LPDWORD)&bytes_sent, 0, sa, sa_len, NULL, NULL))
     {
 #else
     struct msghdr mhdr = {0};
@@ -262,7 +270,7 @@ SL_INLINE_IMPL int sl_sock_send(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
     mhdr.msg_namelen = sa_len;
     mhdr.msg_iov = (struct iovec *)buf;
     mhdr.msg_iovlen = (size_t)bufcount;
-    if ((bytes_sent = (ssize_t)sendmsg(sock->fd, &mhdr, 0)) < 0) {
+    if ((bytes_sent = (ssize_t)sendmsg(sl_sock_fd_get(sock), &mhdr, 0)) < 0) {
 #endif
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
@@ -282,14 +290,14 @@ SL_INLINE_IMPL int sl_sock_recv(sl_sock_t *sock, sl_buf_t *buf, int32_t bufcount
     int32_t epsize = sizeof(*endpoint);
 #if SL_SOCK_API_WINSOCK
     DWORD flags = 0;
-    if (WSARecvFrom(sock->fd, (LPWSABUF)buf, (DWORD)bufcount, (LPDWORD)&bytes_recv, (LPDWORD)&flags, sl_endpoint_addr_get(endpoint), &epsize, NULL, NULL)) {
+    if (WSARecvFrom(sl_sock_fd_get(sock), (LPWSABUF)buf, (DWORD)bufcount, (LPDWORD)&bytes_recv, (LPDWORD)&flags, sl_endpoint_addr_get(endpoint), &epsize, NULL, NULL)) {
 #else
     struct msghdr mhdr = {0};
     mhdr.msg_name = endpoint;
     mhdr.msg_namelen = (socklen_t)epsize;
     mhdr.msg_iov = (struct iovec *)buf;
     mhdr.msg_iovlen = (size_t)bufcount;
-    if ((bytes_recv = (int64_t)recvmsg(sock->fd, &mhdr, 0)) < 0) {
+    if ((bytes_recv = (int64_t)recvmsg(sl_sock_fd_get(sock), &mhdr, 0)) < 0) {
 #endif
         sl_sock_error_set(sock, sl_sys_errno());
         return SL_ERR;
