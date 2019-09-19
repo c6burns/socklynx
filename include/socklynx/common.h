@@ -89,6 +89,8 @@
 #    define SL_SOCK_API_POSIX 1
 #    include <fcntl.h>
 #    include <sys/socket.h>
+#    include <netinet/in.h>
+#    include <netinet/udp.h>
 #    include <unistd.h>
 #    define SL_SOCK_TYPE int
 #elif SL_PLATFORM_SWITCH
