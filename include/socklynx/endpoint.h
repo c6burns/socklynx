@@ -26,20 +26,32 @@
 #include "socklynx/common.h"
 #include "socklynx/error.h"
 
+#if SL_PLATFORM_OSX
+#    define SL_AF_TYPE uint8_t
+#else
+#    define SL_AF_TYPE uint16_t
+#endif
+
 typedef enum sl_sock_af_e {
     SL_SOCK_AF_IPV4 = AF_INET,
     SL_SOCK_AF_IPV6 = AF_INET6,
 } sl_sock_af_t;
 
 typedef struct sl_sockaddr4_s {
-    uint16_t af;
+#if SL_PLATFORM_OSX
+    uint8_t len;
+#endif
+    SL_AF_TYPE af;
     uint16_t port;
     uint32_t addr;
     uint8_t pad[8];
 } sl_sockaddr4_t;
 
 typedef struct sl_sockaddr6_s {
-    uint16_t af;
+#if SL_PLATFORM_OSX
+    uint8_t len;
+#endif
+    SL_AF_TYPE af;
     uint16_t port;
     uint32_t flowinfo;
     uint8_t addr[16];
@@ -54,13 +66,13 @@ typedef union sl_endpoint_u {
 SL_INLINE_IMPL uint16_t sl_endpoint_af_get(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);
-    return endpoint->addr4.af;
+    return (uint16_t)endpoint->addr4.af;
 }
 
 SL_INLINE_IMPL void sl_endpoint_af_set(sl_endpoint_t *endpoint, sl_sock_af_t af)
 {
     SL_ASSERT(endpoint);
-    endpoint->addr4.af = af;
+    endpoint->addr4.af = (SL_AF_TYPE)af;
 }
 
 SL_INLINE_IMPL struct sockaddr *sl_endpoint_addr_get(sl_endpoint_t *endpoint)
@@ -72,13 +84,13 @@ SL_INLINE_IMPL struct sockaddr *sl_endpoint_addr_get(sl_endpoint_t *endpoint)
 SL_INLINE_IMPL bool sl_endpoint_is_ipv4(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);
-    return (sl_endpoint_af_get(endpoint) == SL_SOCK_AF_IPV4);
+    return (sl_endpoint_af_get(endpoint) == (uint16_t)SL_SOCK_AF_IPV4);
 }
 
 SL_INLINE_IMPL bool sl_endpoint_is_ipv6(sl_endpoint_t *endpoint)
 {
     SL_ASSERT(endpoint);
-    return (sl_endpoint_af_get(endpoint) == SL_SOCK_AF_IPV6);
+    return (sl_endpoint_af_get(endpoint) == (uint16_t)SL_SOCK_AF_IPV6);
 }
 
 SL_INLINE_IMPL int sl_endpoint_size(sl_endpoint_t *endpoint)
