@@ -23,6 +23,10 @@
 cmake_minimum_required(VERSION 3.1)
 project(socklynx LANGUAGES C)
 
+set(SL_SKIP_POSTBUILD false CACHE BOOL "Copy the DSO into UnityProject")
+
+include_directories(include)
+include_directories(src/socklynx)
 set(SL_SRCS
 	src/socklynx/socklynx.c
 	include/socklynx/socklynx.h
@@ -33,10 +37,10 @@ set(SL_SRCS
 	include/socklynx/common.h
 	include/socklynx/error.h
 )
-include_directories(include)
-include_directories(src/socklynx)
-add_library(socklynxDSO MODULE ${SL_SRCS})
+add_library(socklynx ${SL_SRCS})
+add_library(socklynxDSO MODULE src/socklynx/socklynx_plugin.c include/socklynx/socklynx_plugin.h)
 if(WIN32)
+	target_link_libraries(socklynx Ws2_32.lib)
 	target_link_libraries(socklynxDSO Ws2_32.lib)
 endif()
 
@@ -54,32 +58,34 @@ endif()
 #)
 #target_link_libraries(socklynx_loadgen socklynxDSO)
 
-if(NOT APPLE)
-	add_custom_command(
-		TARGET socklynxDSO
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy
-			$<TARGET_FILE:socklynxDSO>
-			${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynxDSO>
-	)
-else()
-	set_target_properties(socklynxDSO PROPERTIES BUNDLE TRUE)
+if(SL_SKIP_POSTBUILD)
+    if(NOT APPLE)
+	    add_custom_command(
+		    TARGET socklynxDSO
+		    POST_BUILD
+		    COMMAND ${CMAKE_COMMAND} -E copy
+			    $<TARGET_FILE:socklynxDSO>
+			    ${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynxDSO>
+	    )
+    else()
+	    set_target_properties(socklynxDSO PROPERTIES BUNDLE TRUE)
 	
-	# copy dylib for .net core
-	add_custom_command(
-		TARGET socklynxDSO
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy
-			$<TARGET_FILE:socklynxDSO>
-			${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynxDSO>.dylib
-	)
+	    # copy dylib for .net core
+	    add_custom_command(
+		    TARGET socklynxDSO
+		    POST_BUILD
+		    COMMAND ${CMAKE_COMMAND} -E copy
+			    $<TARGET_FILE:socklynxDSO>
+			    ${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynxDSO>.dylib
+	    )
 
-	# copy bundle for unity
-	add_custom_command(
-		TARGET socklynxDSO
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy
-			$<TARGET_FILE:socklynxDSO>
-			${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynxDSO>.bundle
-	)
+	    # copy bundle for unity
+	    add_custom_command(
+		    TARGET socklynxDSO
+		    POST_BUILD
+		    COMMAND ${CMAKE_COMMAND} -E copy
+			    $<TARGET_FILE:socklynxDSO>
+			    ${CMAKE_SOURCE_DIR}/UnityProject/Assets/SockLynx/Plugins/x86_64/$<TARGET_FILE_NAME:socklynxDSO>.bundle
+	    )
+    endif()
 endif()

@@ -80,8 +80,17 @@
 /* determine socket API */
 #if SL_PLATFORM_WINDOWS || SL_PLATFORM_XBONE
 #    define SL_SOCK_API_WINSOCK 1
+#    ifndef WINSOCK_VERSION
+#        include <winsock2.h>
+#        include <ws2ipdef.h>
+#    endif
+#    define SL_SOCK_TYPE SOCKET
 #elif SL_PLATFORM_POSIX || SL_PLATFORM_OSX || SL_PLATFORM_IOS || SL_PLATFORM_ANDROID
 #    define SL_SOCK_API_POSIX 1
+#    include <fcntl.h>
+#    include <sys/socket.h>
+#    include <unistd.h>
+#    define SL_SOCK_TYPE int
 #elif SL_PLATFORM_SWITCH
 #    define SL_SOCK_API_SWITCH 1
 #elif SL_PLATFORM_PS4

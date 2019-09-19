@@ -26,10 +26,6 @@
 #include "socklynx/common.h"
 #include "socklynx/error.h"
 
-#if SL_SOCK_API_WINSOCK
-#    include <winsock2.h>
-#endif
-
 enum sl_sys_state {
     SL_SYS_STATE_STOPPED,
     SL_SYS_STATE_STARTED,

@@ -26,17 +26,6 @@
 #include "socklynx/common.h"
 #include "socklynx/error.h"
 
-#if SL_PLATFORM_WINDOWS || SL_PLATFORM_XBONE
-#    include <winsock2.h>
-#    include <ws2ipdef.h>
-#else
-#    include <fcntl.h>
-#    include <netinet/in.h>
-#    include <netinet/ip.h>
-#    include <sys/socket.h>
-#    include <unistd.h>
-#endif
-
 typedef enum sl_sock_af_e {
     SL_SOCK_AF_IPV4 = AF_INET,
     SL_SOCK_AF_IPV6 = AF_INET6,

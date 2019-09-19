@@ -31,17 +31,6 @@
 
 #include <memory.h>
 
-#if SL_SOCK_API_WINSOCK
-#    include <winsock2.h>
-#    include <ws2ipdef.h>
-#    define SL_SOCK_TYPE SOCKET
-#else
-#    include <fcntl.h>
-#    include <sys/socket.h>
-#    include <unistd.h>
-#    define SL_SOCK_TYPE int
-#endif
-
 typedef enum sl_sock_state_e {
     SL_SOCK_STATE_NEW,
     SL_SOCK_STATE_CREATED,
