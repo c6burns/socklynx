@@ -32,7 +32,7 @@ if(NOT EXISTS ${SL_DEPS_DIR})
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	list(APPEND SL_TARGET_COMPILE_DEFS -DSL_CMAKE_BUILD_DEBUG)
+	list(APPEND SL_TARGET_COMPILE_DEFS -DTN_CMAKE_BUILD_DEBUG)
 endif()
 
 #
@@ -66,6 +66,7 @@ set(SL_SKIP_POSTBUILD false CACHE BOOL "Copy the DSO into UnityProject")
 
 #
 # build socklynx library
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/deps/aws-c-common/cmake)
 include(slTesting)
 enable_testing()
