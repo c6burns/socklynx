@@ -1,0 +1,6 @@
+#include "@TEST_SRC_C@"
+
+int main(void)
+{
+	return @TEST_CASE_NAME@(0, NULL);
+}
