@@ -21,7 +21,7 @@
  */
 
 #include "socklynx/test_harness.h"
-#include "socklynx/socklynx.h"
+#include "socklynx/socklynx_plugin.h"
 
 
 const uint16_t listen_port = 51343;
@@ -57,7 +57,7 @@ SL_TEST_CASE_BEGIN(sl_udp_doublesetup)
     ASSERT_TRUE(0 != ctx.af_inet6);
 
     ASSERT_SUCCESS(socklynx_cleanup(&ctx));
-    ASSERT_TRUE(SL_SYS_STATE_STOPPED, ctx.state);
+    ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
 SL_TEST_CASE_END(sl_udp_doublesetup);
 
@@ -67,7 +67,7 @@ SL_TEST_CASE_BEGIN(sl_udp_cleanup)
     sl_sys_t ctx;
 
     ASSERT_SUCCESS(socklynx_cleanup(&ctx));
-    ASSERT_TRUE(SL_SYS_STATE_STOPPED, ctx.state);
+    ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
 SL_TEST_CASE_END(sl_udp_cleanup);
 
@@ -123,7 +123,7 @@ SL_TEST_CASE_BEGIN(sl_udp_doublesetupcleanup)
 SL_TEST_CASE_END(sl_udp_doublesetupcleanup);
 
 
-SL_TEST_CASE_BEGIN(sl_c_socket_newudp)
+SL_TEST_CASE_BEGIN(sl_udp_newsocket)
 
     sl_sys_t ctx;
 
@@ -132,7 +132,7 @@ SL_TEST_CASE_BEGIN(sl_c_socket_newudp)
     sl_sockaddr4_t loopback;
     loopback.af = ctx.af_inet;
     loopback.port = listen_port;
-    loopback.addr = 127 | (1 << 48);
+    loopback.addr = 127 | (1 << 24);
 
     sl_endpoint_t endpoint;
     endpoint.addr4 = loopback;
@@ -153,7 +153,7 @@ SL_TEST_CASE_BEGIN(sl_c_socket_newudp)
 
     ASSERT_SUCCESS(socklynx_cleanup(&ctx));
 
-SL_TEST_CASE_END(sl_c_socket_newudp);
+SL_TEST_CASE_END(sl_udp_newsocket);
 
 
 SL_TEST_CASE_BEGIN(sl_udp_socketopenclose)

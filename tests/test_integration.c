@@ -21,9 +21,13 @@
  */
 
 #include "socklynx/test_harness.h"
-#include "socklynx/socklynx.h"
+#include "socklynx/socklynx_plugin.h"
 
 
+#define pl_server_len 1235
+#define mem_server_len 1408
+#define pl_client_len 256
+#define mem_client_len 1408
 const uint16_t listen_port = 51343;
 
 
@@ -31,53 +35,67 @@ SL_TEST_CASE_BEGIN(sl_udp_socketsendrecv_blocking)
 
     sl_sys_t ctx;
 
-    sl_sock_t sock_server;
-    sl_sock_t sock_client;
-
     ASSERT_SUCCESS(socklynx_setup(&ctx));
-
-    /* server side endpoints, socket, random payload, send/recv buffers */
 
     sl_sockaddr4_t loopback;
     loopback.af = ctx.af_inet;
     loopback.port = listen_port;
-    loopback.addr = 127 | (1 << 48);
+    loopback.addr = 127 | (1 << 24);
 
+    /* server side endpoints, socket, random payload, send/recv buffers */
     sl_endpoint_t ep_server;
     ep_server.addr4 = loopback;
+
     sl_endpoint_t ep_server_recv;
+
+    sl_sock_t sock_server;
     sock_server.proto = SL_SOCK_PROTO_UDP;
     sock_server.type = SL_SOCK_TYPE_DGRAM;
     sock_server.endpoint = ep_server;
-    sl_buf_t buf_server_recv;
-    sl_buf_t buf_server_send;
-    const int pl_server_len = 1235;
-    const int mem_server_len = 1408;
+
     char pl_server[pl_server_len];
     char mem_server[mem_server_len];
+
     for (int i = 0; i < pl_server_len; i++)
     {
         pl_server[i] = i ^ 0x9a * (i >> 8);
     }
 
+    sl_buf_t buf_server_send;
+    buf_server_send.base = &pl_server[0];
+    buf_server_send.len = pl_server_len;
+
+    sl_buf_t buf_server_recv;
+    buf_server_recv.base = &mem_server[0];
+    buf_server_recv.len = mem_server_len;
+
     /* client side endpoints, socket, random payload, send/recv buffers */
     sl_endpoint_t ep_client;
     loopback.port += 1;
     ep_client.addr4 = loopback;
+
     sl_endpoint_t ep_client_recv;
+
+    sl_sock_t sock_client;
     sock_client.proto = SL_SOCK_PROTO_UDP;
     sock_client.type = SL_SOCK_TYPE_DGRAM;
     sock_client.endpoint = ep_client;
-    sl_buf_t buf_client_recv;
-    sl_buf_t buf_client_send;
-    const int pl_client_len = 256;
-    const int mem_client_len = 1408;
+
     char pl_client[pl_client_len];
     char mem_client[mem_client_len];
+
     for (int i = 0; i < pl_client_len; i++)
     {
         pl_client[i] = i ^ 0x9a * (i >> 8);
     }
+
+    sl_buf_t buf_client_send;
+    buf_client_send.base = &pl_client[0];
+    buf_client_send.len = pl_client_len;
+
+    sl_buf_t buf_client_recv;
+    buf_client_recv.base = &mem_client[0];
+    buf_client_recv.len = mem_client_len;
 
     ASSERT_SUCCESS(socklynx_socket_open(&sock_server));
     ASSERT_SUCCESS(socklynx_socket_open(&sock_client));
