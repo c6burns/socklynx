@@ -12,7 +12,7 @@
 #define SL_TEST_CASE_BEGIN(fn)         \
     static int fn(SL_TEST_CASE_PARAMS) \
     {                                  \
-        (void)_ctx;                     \
+        (void)_ctx;                    \
         (void)allocator;
 
 #define SL_TEST_CASE_END(fn)           \

@@ -32,7 +32,32 @@ if(NOT EXISTS ${SL_DEPS_DIR})
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	list(APPEND SL_TARGET_COMPILE_DEFS -DTN_CMAKE_BUILD_DEBUG)
+	list(APPEND SL_TARGET_COMPILE_DEFS -DSL_CMAKE_BUILD_DEBUG)
+endif()
+
+if(NOT WIN32)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -std=c99")
+	if(NOT APPLE)
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
+	endif()
+else()
+	set(CompilerFlags
+		CMAKE_CXX_FLAGS
+		CMAKE_CXX_FLAGS_DEBUG
+		CMAKE_CXX_FLAGS_RELEASE
+		CMAKE_C_FLAGS
+		CMAKE_C_FLAGS_DEBUG
+		CMAKE_C_FLAGS_RELEASE
+	)
+	foreach(CompilerFlag ${CompilerFlags})
+		string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+	endforeach()
+
+	if(MSVC)
+		add_custom_target(CMake SOURCES CMakeLists.txt)
+		list(APPEND SL_TARGET_COMPILE_DEFS -D_CRT_SECURE_NO_WARNINGS)
+	endif()
 endif()
 
 #
@@ -70,9 +95,12 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/deps/aws-c-common/cmake)
 include(slTesting)
 enable_testing()
-include_directories(include)
-include_directories(src/socklynx)
-set(SL_SRCS
+
+set(SL_SRC ${CMAKE_CURRENT_SOURCE_DIR})
+list(APPEND SL_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+list(APPEND SL_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/socklynx)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src/socklynx)
+set(SL_LIBRARY_SRCS
 	src/socklynx/socklynx.c
 	include/socklynx/socklynx.h
 	include/socklynx/endpoint.h
@@ -80,10 +108,16 @@ set(SL_SRCS
 	include/socklynx/sock.h
 	include/socklynx/sys.h
 	include/socklynx/common.h
+	include/socklynx/test_harness.h
 	include/socklynx/error.h
 )
-add_library(socklynx ${SL_SRCS})
+add_library(socklynx STATIC ${SL_LIBRARY_SRCS})
 add_library(socklynxDSO MODULE src/socklynx/socklynx_plugin.c include/socklynx/socklynx_plugin.h)
+target_link_libraries(socklynx ${SL_LIBRARIES})
+target_compile_definitions(socklynx PRIVATE ${SL_TARGET_COMPILE_DEFS})
+target_compile_definitions(socklynx PRIVATE -DSL_EXPORTING)
+list(APPEND SL_LIBRARIES socklynx)
+
 if(WIN32)
 	target_link_libraries(socklynx Ws2_32.lib)
 	target_link_libraries(socklynxDSO Ws2_32.lib)
@@ -110,11 +144,15 @@ sl_add_test_case(sl_udp_socketsendrecv_blocking)
 
 sl_generate_test_driver(sl-tests sl)
 target_link_libraries(sl-tests ${SL_LIBRARIES})
+target_link_libraries(sl-tests socklynx)
 target_compile_definitions(sl-tests PRIVATE ${SL_TARGET_COMPILE_DEFS})
 
 # runner for single test for easy debug step through an impl issue
 #sl_test_single(test_heap sl_heap_ops "${SL_LIBRARIES}" "${SL_TARGET_COMPILE_DEFS}")
 #sl_test_single(test_endpoint sl_endpoint_ops "${SL_LIBRARIES}" "${SL_TARGET_COMPILE_DEFS}")
+
+set(SL_INCLUDE_DIRS ${SL_INCLUDE_DIRS} PARENT_SCOPE)
+set(SL_LIBRARIES ${SL_LIBRARIES} PARENT_SCOPE)
 
 #include_directories(src/socklynx_server)
 #add_executable(socklynx_server
