@@ -22,7 +22,10 @@
 
 cmake_minimum_required(VERSION 3.1)
 project(socklynx LANGUAGES C)
+include(CMakeDependentOption)
 
+set(SL_STATIC_BUILD OFF CACHE BOOL "Build as a static library as opposed to as a plugin")
+CMAKE_DEPENDENT_OPTION(SL_SKIP_POSTBUILD "Copy the DSO into UnityProject" OFF "SL_STATIC_BUILD" ON)
 set(SL_DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps)
 set(SL_LIBRARIES "")
 set(SL_INCLUDE_DIRS "")
@@ -111,16 +114,23 @@ set(SL_LIBRARY_SRCS
 	include/socklynx/test_harness.h
 	include/socklynx/error.h
 )
+if(SL_STATIC_BUILD)
+    set(SL_LIBRARY_SRCS ${SL_LIBRARY_SRCS} ${SL_DSO_SRCS})
+else()
+    add_library(socklynxDSO MODULE ${SL_DSO_SRCS})
+endif()
+
 add_library(socklynx STATIC ${SL_LIBRARY_SRCS})
-add_library(socklynxDSO MODULE src/socklynx/socklynx_plugin.c include/socklynx/socklynx_plugin.h)
 target_link_libraries(socklynx ${SL_LIBRARIES})
 target_compile_definitions(socklynx PRIVATE ${SL_TARGET_COMPILE_DEFS})
 target_compile_definitions(socklynx PRIVATE -DSL_EXPORTING)
 list(APPEND SL_LIBRARIES socklynx)
 
 if(WIN32)
-	target_link_libraries(socklynx Ws2_32.lib)
-	target_link_libraries(socklynxDSO Ws2_32.lib)
+    target_link_libraries(socklynx Ws2_32.lib)
+    if(NOT SL_STATIC_BUILD)
+        target_link_libraries(socklynxDSO Ws2_32.lib)
+    endif()
 endif()
 
 #
@@ -148,11 +158,8 @@ target_link_libraries(sl-tests socklynx)
 target_compile_definitions(sl-tests PRIVATE ${SL_TARGET_COMPILE_DEFS})
 
 # runner for single test for easy debug step through an impl issue
-#sl_test_single(test_heap sl_heap_ops "${SL_LIBRARIES}" "${SL_TARGET_COMPILE_DEFS}")
-#sl_test_single(test_endpoint sl_endpoint_ops "${SL_LIBRARIES}" "${SL_TARGET_COMPILE_DEFS}")
-
-set(SL_INCLUDE_DIRS ${SL_INCLUDE_DIRS} PARENT_SCOPE)
-set(SL_LIBRARIES ${SL_LIBRARIES} PARENT_SCOPE)
+#sl_test_single(tests/test_api sl_udp_socketsetblocking "${SL_LIBRARIES}" "${SL_TARGET_COMPILE_DEFS}")
+#sl_test_single(test_integration sl_udp_socketsendrecv_blocking "${SL_LIBRARIES}" "${SL_TARGET_COMPILE_DEFS}")
 
 #include_directories(src/socklynx_server)
 #add_executable(socklynx_server

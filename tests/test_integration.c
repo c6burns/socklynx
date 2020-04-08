@@ -21,23 +21,23 @@
  */
 
 #include "socklynx/test_harness.h"
-#include "socklynx/socklynx_plugin.h"
+#include "socklynx/socklynx.h"
 
 
 #define pl_server_len 1235
 #define mem_server_len 1408
 #define pl_client_len 256
 #define mem_client_len 1408
-const uint16_t listen_port = 51343;
+static const uint16_t listen_port = 51343;
 
 
 SL_TEST_CASE_BEGIN(sl_udp_socketsendrecv_blocking)
 
     sl_sys_t ctx;
 
-    ASSERT_SUCCESS(socklynx_setup(&ctx));
+    ASSERT_SUCCESS(sl_sys_setup(&ctx));
 
-    sl_sockaddr4_t loopback;
+    sl_sockaddr4_t loopback = {0};
     loopback.af = ctx.af_inet;
     loopback.port = listen_port;
     loopback.addr = 127 | (1 << 24);
@@ -48,7 +48,7 @@ SL_TEST_CASE_BEGIN(sl_udp_socketsendrecv_blocking)
 
     sl_endpoint_t ep_server_recv;
 
-    sl_sock_t sock_server;
+    sl_sock_t sock_server = {0};
     sock_server.proto = SL_SOCK_PROTO_UDP;
     sock_server.type = SL_SOCK_TYPE_DGRAM;
     sock_server.endpoint = ep_server;
@@ -76,7 +76,7 @@ SL_TEST_CASE_BEGIN(sl_udp_socketsendrecv_blocking)
 
     sl_endpoint_t ep_client_recv;
 
-    sl_sock_t sock_client;
+    sl_sock_t sock_client = {0};
     sock_client.proto = SL_SOCK_PROTO_UDP;
     sock_client.type = SL_SOCK_TYPE_DGRAM;
     sock_client.endpoint = ep_client;
@@ -86,7 +86,7 @@ SL_TEST_CASE_BEGIN(sl_udp_socketsendrecv_blocking)
 
     for (int i = 0; i < pl_client_len; i++)
     {
-        pl_client[i] = i ^ 0x9a * (i >> 8);
+        pl_client[i] = i ^ 0xb7 * (i >> 8);
     }
 
     sl_buf_t buf_client_send;
@@ -97,21 +97,24 @@ SL_TEST_CASE_BEGIN(sl_udp_socketsendrecv_blocking)
     buf_client_recv.base = &mem_client[0];
     buf_client_recv.len = mem_client_len;
 
-    ASSERT_SUCCESS(socklynx_socket_open(&sock_server));
-    ASSERT_SUCCESS(socklynx_socket_open(&sock_client));
 
-    ASSERT_TRUE(pl_client_len == socklynx_socket_send(&sock_client, &buf_client_send, 1, &ep_server));
-    ASSERT_TRUE(pl_client_len == socklynx_socket_recv(&sock_server, &buf_server_recv, 1, &ep_server_recv));
+    ASSERT_SUCCESS(sl_sock_create(&sock_server, SL_SOCK_TYPE_DGRAM, SL_SOCK_PROTO_UDP));
+    ASSERT_SUCCESS(sl_sock_bind(&sock_server));
+    ASSERT_SUCCESS(sl_sock_create(&sock_client, SL_SOCK_TYPE_DGRAM, SL_SOCK_PROTO_UDP));
+    ASSERT_SUCCESS(sl_sock_bind(&sock_client));
+
+    ASSERT_TRUE(pl_client_len == sl_sock_send(&sock_client, &buf_client_send, 1, &ep_server));
+    ASSERT_TRUE(pl_client_len == sl_sock_recv(&sock_server, &buf_server_recv, 1, &ep_server_recv));
     ASSERT_TRUE(memcmp(&pl_client[0], buf_server_recv.base, pl_server_len));
-    ASSERT_TRUE(memcmp((void*)&ep_client + 2, (void*)&ep_server_recv + 2, sizeof(sl_endpoint_t) - 2));
+    ASSERT_TRUE(memcmp(&ep_client + 2, &ep_server_recv + 2, sizeof(sl_endpoint_t) - 2));
 
-    ASSERT_TRUE(pl_server_len == socklynx_socket_send(&sock_server, &buf_server_send, 1, &ep_client));
-    ASSERT_TRUE(pl_server_len == socklynx_socket_recv(&sock_client, &buf_client_recv, 1, &ep_client_recv));
-    ASSERT_TRUE(memcmp(&pl_server[0], buf_client_recv.base, pl_client_len));
-    ASSERT_TRUE(memcmp((void*)&ep_server + 2, (void*)&ep_client_recv + 2, sizeof(sl_endpoint_t) - 2));
+    ASSERT_TRUE(pl_server_len == sl_sock_send(&sock_server, &buf_server_send, 1, &ep_client));
+    ASSERT_TRUE(pl_server_len == sl_sock_recv(&sock_client, &buf_client_recv, 1, &ep_client_recv));
+    ASSERT_SUCCESS(memcmp(pl_server, buf_client_recv.base, pl_server_len));
+    ASSERT_TRUE(memcmp(&ep_server + 2, &ep_client_recv + 2, sizeof(sl_endpoint_t) - 2));
 
-    ASSERT_SUCCESS(socklynx_socket_close(&sock_server));
-    ASSERT_SUCCESS(socklynx_socket_close(&sock_client));
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sock_close(&sock_server));
+    ASSERT_SUCCESS(sl_sock_close(&sock_client));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
 
 SL_TEST_CASE_END(sl_udp_socketsendrecv_blocking)

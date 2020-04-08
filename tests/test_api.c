@@ -21,22 +21,22 @@
  */
 
 #include "socklynx/test_harness.h"
-#include "socklynx/socklynx_plugin.h"
+#include "socklynx/socklynx.h"
 
 
-const uint16_t listen_port = 51343;
+static const uint16_t listen_port = 51343;
 
 
 SL_TEST_CASE_BEGIN(sl_udp_setup)
 
     sl_sys_t ctx;
 
-    ASSERT_SUCCESS(socklynx_setup(&ctx));
+    ASSERT_SUCCESS(sl_sys_setup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STARTED == ctx.state);
     ASSERT_TRUE(0 != ctx.af_inet);
     ASSERT_TRUE(0 != ctx.af_inet6);
 
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
 SL_TEST_CASE_END(sl_udp_setup);
@@ -46,17 +46,17 @@ SL_TEST_CASE_BEGIN(sl_udp_doublesetup)
 
     sl_sys_t ctx;
 
-    ASSERT_SUCCESS(socklynx_setup(&ctx));
+    ASSERT_SUCCESS(sl_sys_setup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STARTED == ctx.state);
     ASSERT_TRUE(0 != ctx.af_inet);
     ASSERT_TRUE(0 != ctx.af_inet6);
 
-    ASSERT_SUCCESS(socklynx_setup(&ctx));
+    ASSERT_SUCCESS(sl_sys_setup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STARTED == ctx.state);
     ASSERT_TRUE(0 != ctx.af_inet);
     ASSERT_TRUE(0 != ctx.af_inet6);
 
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
 SL_TEST_CASE_END(sl_udp_doublesetup);
@@ -66,7 +66,7 @@ SL_TEST_CASE_BEGIN(sl_udp_cleanup)
 
     sl_sys_t ctx;
 
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
 SL_TEST_CASE_END(sl_udp_cleanup);
@@ -76,10 +76,10 @@ SL_TEST_CASE_BEGIN(sl_udp_doublecleanup)
 
     sl_sys_t ctx;
 
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
 SL_TEST_CASE_END(sl_udp_doublecleanup);
@@ -89,12 +89,12 @@ SL_TEST_CASE_BEGIN(sl_udp_setupcleanup)
 
     sl_sys_t ctx;
 
-    ASSERT_SUCCESS(socklynx_setup(&ctx));
+    ASSERT_SUCCESS(sl_sys_setup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STARTED == ctx.state);
     ASSERT_TRUE(0 != ctx.af_inet);
     ASSERT_TRUE(0 != ctx.af_inet6);
 
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
 SL_TEST_CASE_END(sl_udp_setupcleanup);
@@ -104,20 +104,20 @@ SL_TEST_CASE_BEGIN(sl_udp_doublesetupcleanup)
 
     sl_sys_t ctx;
 
-    ASSERT_SUCCESS(socklynx_setup(&ctx));
+    ASSERT_SUCCESS(sl_sys_setup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STARTED == ctx.state);
     ASSERT_TRUE(0 != ctx.af_inet);
     ASSERT_TRUE(0 != ctx.af_inet6);
 
-    ASSERT_SUCCESS(socklynx_setup(&ctx));
+    ASSERT_SUCCESS(sl_sys_setup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STARTED == ctx.state);
     ASSERT_TRUE(0 != ctx.af_inet);
     ASSERT_TRUE(0 != ctx.af_inet6);
 
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
 SL_TEST_CASE_END(sl_udp_doublesetupcleanup);
@@ -127,9 +127,9 @@ SL_TEST_CASE_BEGIN(sl_udp_newsocket)
 
     sl_sys_t ctx;
 
-    ASSERT_SUCCESS(socklynx_setup(&ctx));
+    ASSERT_SUCCESS(sl_sys_setup(&ctx));
 
-    sl_sockaddr4_t loopback;
+    sl_sockaddr4_t loopback = {0};
     loopback.af = ctx.af_inet;
     loopback.port = listen_port;
     loopback.addr = 127 | (1 << 24);
@@ -137,7 +137,7 @@ SL_TEST_CASE_BEGIN(sl_udp_newsocket)
     sl_endpoint_t endpoint;
     endpoint.addr4 = loopback;
 
-    sl_sock_t sock;
+    sl_sock_t sock = {0};
     sock.proto = SL_SOCK_PROTO_UDP;
     sock.type = SL_SOCK_TYPE_DGRAM;
     sock.endpoint = endpoint;
@@ -151,7 +151,7 @@ SL_TEST_CASE_BEGIN(sl_udp_newsocket)
     ASSERT_TRUE(ctx.af_inet == sock.endpoint.addr4.af);
     ASSERT_TRUE(listen_port == sock.endpoint.addr4.port);
 
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
 
 SL_TEST_CASE_END(sl_udp_newsocket);
 
@@ -160,30 +160,31 @@ SL_TEST_CASE_BEGIN(sl_udp_socketopenclose)
 
     sl_sys_t ctx;
 
-    ASSERT_SUCCESS(socklynx_setup(&ctx));
+    ASSERT_SUCCESS(sl_sys_setup(&ctx));
 
-    sl_sockaddr4_t loopback;
+    sl_sockaddr4_t loopback = {0};
     loopback.af = ctx.af_inet;
     loopback.port = listen_port;
 
     sl_endpoint_t endpoint;
     endpoint.addr4 = loopback;
 
-    sl_sock_t sock;
+    sl_sock_t sock = {0};
     sock.proto = SL_SOCK_PROTO_UDP;
     sock.type = SL_SOCK_TYPE_DGRAM;
     sock.endpoint = endpoint;
 
-    ASSERT_SUCCESS(socklynx_socket_open(&sock));
+    ASSERT_SUCCESS(sl_sock_create(&sock, SL_SOCK_TYPE_DGRAM, SL_SOCK_PROTO_UDP));
+    ASSERT_SUCCESS(sl_sock_bind(&sock));
     ASSERT_TRUE(SL_SOCK_STATE_BOUND == sock.state);
     ASSERT_TRUE(0 == sock.flags);
     ASSERT_TRUE(0 == sock.error);
 
-    ASSERT_SUCCESS(socklynx_socket_close(&sock));
+    ASSERT_SUCCESS(sl_sock_close(&sock));
     ASSERT_TRUE(SL_SOCK_STATE_CLOSED == sock.state);
     ASSERT_TRUE(0 == sock.fd);
 
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
     ASSERT_TRUE(SL_SYS_STATE_STOPPED == ctx.state);
 
 SL_TEST_CASE_END(sl_udp_socketopenclose);
@@ -193,25 +194,26 @@ SL_TEST_CASE_BEGIN(sl_udp_socketsetblocking)
 
     sl_sys_t ctx;
 
-    ASSERT_SUCCESS(socklynx_setup(&ctx));
+    ASSERT_SUCCESS(sl_sys_setup(&ctx));
 
-    sl_sockaddr4_t loopback;
+    sl_sockaddr4_t loopback = {0};
     loopback.af = ctx.af_inet;
     loopback.port = listen_port;
 
     sl_endpoint_t endpoint;
     endpoint.addr4 = loopback;
 
-    sl_sock_t sock;
+    sl_sock_t sock = {0};
     sock.proto = SL_SOCK_PROTO_UDP;
     sock.type = SL_SOCK_TYPE_DGRAM;
     sock.endpoint = endpoint;
 
-    ASSERT_SUCCESS(socklynx_socket_open(&sock));
-    ASSERT_SUCCESS(socklynx_socket_nonblocking(&sock, true));
+    ASSERT_SUCCESS(sl_sock_create(&sock, SL_SOCK_TYPE_DGRAM, SL_SOCK_PROTO_UDP));
+    ASSERT_SUCCESS(sl_sock_bind(&sock));
+    ASSERT_SUCCESS(sl_sock_nonblocking_set(&sock));
     ASSERT_TRUE(SL_SOCK_FLAG_NONBLOCKING & sock.flags);
 
-    ASSERT_SUCCESS(socklynx_socket_close(&sock));
-    ASSERT_SUCCESS(socklynx_cleanup(&ctx));
+    ASSERT_SUCCESS(sl_sock_close(&sock));
+    ASSERT_SUCCESS(sl_sys_cleanup(&ctx));
 
 SL_TEST_CASE_END(sl_udp_socketsetblocking);
