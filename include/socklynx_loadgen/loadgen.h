@@ -23,4 +23,8 @@
 #ifndef SL_LOADGEN_H
 #define SL_LOADGEN_H
 
+#include "socklynx/socklynx.h"
+#include <aws/common/command_line_parser.h>
+#include <sys/time.h>
+
 #endif

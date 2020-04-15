@@ -23,4 +23,8 @@
 #ifndef SL_SERVER_H
 #define SL_SERVER_H
 
+#include "socklynx/socklynx.h"
+#include <aws/common/command_line_parser.h>
+#include <sys/time.h>
+
 #endif

@@ -161,19 +161,19 @@ target_compile_definitions(sl-tests PRIVATE ${SL_TARGET_COMPILE_DEFS})
 #sl_test_single(tests/test_api sl_udp_socketsetblocking "${SL_LIBRARIES}" "${SL_TARGET_COMPILE_DEFS}")
 #sl_test_single(test_integration sl_udp_socketsendrecv_blocking "${SL_LIBRARIES}" "${SL_TARGET_COMPILE_DEFS}")
 
-#include_directories(src/socklynx_server)
-#add_executable(socklynx_server
-#	src/socklynx_server/server.c
-#	include/socklynx_server/server.h
-#)
-#target_link_libraries(socklynx_server socklynxDSO)
+include_directories(src/socklynx_server)
+add_executable(socklynx_server
+	src/socklynx_server/server.c
+	include/socklynx_server/server.h
+)
+target_link_libraries(socklynx_server ${SL_LIBRARIES})
 
-#include_directories(src/socklynx_loadgen)
-#add_executable(socklynx_loadgen
-#	src/socklynx_loadgen/loadgen.c
-#	include/socklynx_loadgen/loadgen.h
-#)
-#target_link_libraries(socklynx_loadgen socklynxDSO)
+include_directories(src/socklynx_loadgen)
+add_executable(socklynx_loadgen
+	src/socklynx_loadgen/loadgen.c
+	include/socklynx_loadgen/loadgen.h
+)
+target_link_libraries(socklynx_loadgen ${SL_LIBRARIES})
 
 if(SL_SKIP_POSTBUILD)
 	if(NOT APPLE)
