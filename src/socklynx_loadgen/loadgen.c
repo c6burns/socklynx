@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
 
     sl_sys_t ctx;
 
-    (sl_sys_setup(&ctx));
+    ASSERT(sl_sys_setup(&ctx));
 
     sl_sockaddr4_t loopback = {0};
     loopback.af = ctx.af_inet;
